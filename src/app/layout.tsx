@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import "./globals.css";
@@ -23,6 +23,15 @@ export const metadata: Metadata = {
   },
   description:
     "多生意簿、輕量記帳，專為香港 freelancer 同網店小賣家。HK$38／月、年付 HK$380。",
+  appleWebApp: {
+    capable: true,
+    title: "Harbix 記帳",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#9333ea",
 };
 
 export default function RootLayout({

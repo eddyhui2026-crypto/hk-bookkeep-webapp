@@ -4,4 +4,4 @@ Harbix app / PWA branding
 - apple-touch-icon.png — 180×180 PNG（可由此 SVG 匯出），再在 src/app/layout.tsx 設 metadata.icons.apple。
 - logo-full.svg / logo-mark.svg — 可選，行銷用。
 
-網站 favicon：src/app/icon.svg（Next.js 自動使用）。改圖標請同步改 src/app/icon.svg 或複製 app-icon.svg 覆蓋。
+網站／手機主畫面圖標：Next 用 src/app/icon.tsx（512 PNG）同 apple-icon.tsx（180 PNG）動態輸出；畫面邏輯喺 src/lib/og-app-icon.tsx。備份向量可編輯 public/app-branding/app-icon.svg。
