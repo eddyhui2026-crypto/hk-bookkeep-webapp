@@ -14,10 +14,13 @@ export function AppHeader({ email }: { email?: string | null }) {
       className="border-b border-border bg-card print:hidden"
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link href="/app" className="font-semibold text-foreground">
+        <Link
+          href="/app"
+          className="text-lg font-semibold text-foreground sm:text-base"
+        >
           {SITE_NAME}
         </Link>
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex flex-wrap items-center justify-end gap-2 text-base sm:gap-3 sm:text-sm">
           {email && (
             <span className="hidden text-muted sm:inline">{email}</span>
           )}

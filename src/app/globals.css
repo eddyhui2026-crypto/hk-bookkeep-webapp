@@ -44,6 +44,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* 手機版略為放大根字級，配合 rem 類 Tailwind 一齊變大 */
+@media (max-width: 640px) {
+  html {
+    font-size: 17px;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

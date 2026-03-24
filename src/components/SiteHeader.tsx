@@ -16,7 +16,7 @@ export function SiteHeader() {
         >
           {SITE_NAME}
         </Link>
-        <nav className="flex flex-wrap items-center gap-3 text-sm text-muted">
+        <nav className="flex flex-wrap items-center gap-3 text-base text-muted sm:text-sm">
           <Link href="/articles" className="hover:text-foreground">
             {t("nav.articles")}
           </Link>

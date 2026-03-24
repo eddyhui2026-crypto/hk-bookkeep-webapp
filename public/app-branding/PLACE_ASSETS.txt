@@ -1,0 +1,7 @@
+Harbix app / PWA branding
+
+- app-icon.svg — 與 src/app/icon.svg 同款（白底、彩色斑點圍繞粗體 B）；可單獨匯出 PNG 做商店圖。
+- apple-touch-icon.png — 180×180 PNG（可由此 SVG 匯出），再在 src/app/layout.tsx 設 metadata.icons.apple。
+- logo-full.svg / logo-mark.svg — 可選，行銷用。
+
+網站 favicon：src/app/icon.svg（Next.js 自動使用）。改圖標請同步改 src/app/icon.svg 或複製 app-icon.svg 覆蓋。

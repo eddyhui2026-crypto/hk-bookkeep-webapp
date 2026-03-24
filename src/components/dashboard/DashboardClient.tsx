@@ -22,6 +22,7 @@ import {
   LEDGER_MAX,
   RECEIPT_MAX_BYTES,
 } from "@/lib/constants";
+import { useAppSnap } from "@/components/app/AppSnapContext";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import type { TxForChart } from "@/lib/dashboard-chart-data";
 import { categoryLabel } from "@/lib/category-label";
@@ -82,6 +83,7 @@ export function DashboardClient({
   quickAddIncomePrefill: QuickAddIncomePrefill;
 }) {
   const { locale, t } = useI18n();
+  const { pendingReceipt, clearPendingReceipt } = useAppSnap();
   const colon = locale === "zh" ? "：" : ": ";
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -95,7 +97,6 @@ export function DashboardClient({
   const [txDate, setTxDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
   const receiptInputRef = useRef<HTMLInputElement>(null);
-  const fabCameraInputRef = useRef<HTMLInputElement>(null);
   const amountInputRef = useRef<HTMLInputElement>(null);
   const quickAddRef = useRef<HTMLFormElement | null>(null);
   const prefillIncomeAppliedRef = useRef(false);
@@ -150,6 +151,19 @@ export function DashboardClient({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [ledgerDeleteTarget]);
+
+  useEffect(() => {
+    if (!pendingReceipt || !activeLedgerId) return;
+    setFile(pendingReceipt);
+    clearPendingReceipt();
+    requestAnimationFrame(() => {
+      quickAddRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      window.setTimeout(() => amountInputRef.current?.focus(), 350);
+    });
+  }, [pendingReceipt, activeLedgerId, clearPendingReceipt]);
 
   useEffect(() => {
     if (!quickAddIncomePrefill) {
@@ -1216,69 +1230,6 @@ export function DashboardClient({
             </div>
           </div>
         </div>
-      )}
-
-      {activeLedgerId && canWrite && (
-        <>
-          <input
-            ref={fabCameraInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden
-            onChange={(e) => {
-              const f = e.target.files?.[0] ?? null;
-              e.target.value = "";
-              setFile(f);
-              if (f) {
-                requestAnimationFrame(() => {
-                  quickAddRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center",
-                  });
-                  window.setTimeout(() => amountInputRef.current?.focus(), 350);
-                });
-              }
-            }}
-          />
-          <button
-            type="button"
-            className="print:hidden fixed z-40 flex h-14 max-w-[min(calc(100vw-2rem),20rem)] items-center gap-2 rounded-full bg-brand py-2 pl-3 pr-4 text-white shadow-lg transition hover:bg-brand-hover focus-visible:outline focus-visible:ring-2 focus-visible:ring-brand/50 sm:h-14 sm:pl-4"
-            style={{
-              bottom: "max(1.25rem, env(safe-area-inset-bottom, 0px))",
-              right: "max(1rem, env(safe-area-inset-right, 0px))",
-            }}
-            onClick={() => {
-              setErr(null);
-              fabCameraInputRef.current?.click();
-            }}
-            aria-label={t("dashboard.fabQuickSnapAria")}
-            title={t("dashboard.fabQuickSnapHint")}
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-              >
-                <path d="M4.5 9.5h2l1.5-2.5h8l1.5 2.5h2A1.5 1.5 0 0 1 21 11v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19v-8a1.5 1.5 0 0 1 1.5-1.5Z" />
-                <circle cx="12" cy="14" r="3.25" />
-              </svg>
-            </span>
-            <span className="hidden min-w-0 text-left text-sm font-semibold leading-tight sm:block">
-              {t("dashboard.fabQuickSnap")}
-            </span>
-          </button>
-        </>
       )}
 
       {receiptPreview && (

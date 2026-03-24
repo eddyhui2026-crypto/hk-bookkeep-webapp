@@ -38,8 +38,8 @@ export function HomePageClient() {
     <div className="mx-auto max-w-5xl px-4 py-16">
       <div className="lg:grid lg:grid-cols-[1fr_auto] lg:items-start lg:gap-x-10 xl:gap-x-14">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-brand">{t("home.tag")}</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+          <p className="text-base font-medium text-brand sm:text-sm">{t("home.tag")}</p>
+          <h1 className="mt-3 text-[2.35rem] font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
             {t("home.titleLine1")}
             <br />
             {t("home.titleLine2")}
@@ -63,7 +63,7 @@ export function HomePageClient() {
         </div>
       </div>
 
-      <ul className="mt-10 grid gap-3 text-sm text-foreground/90 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-10 grid gap-3 text-base text-foreground/90 sm:grid-cols-2 sm:text-sm lg:grid-cols-3">
         <li className="rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
           {t("home.li1")}
         </li>
