@@ -11,6 +11,8 @@ export function AppIconOg({ side }: { side: number }) {
         height: side,
         position: "relative",
         display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         backgroundColor: "#ffffff",
         borderRadius: u(112),
         overflow: "hidden",
@@ -243,30 +245,24 @@ export function AppIconOg({ side }: { side: number }) {
         }}
       />
 
-      {/* 最後畫、避免 ImageResponse 唔支援 z-index */}
-      <div
+      {/* 唔好用 absolute 包住個字：Satori 會令成個 flex 冇 in-flow 子元素，B 會走位／被切 */}
+      <span
         style={{
-          position: "absolute",
-          inset: 0,
+          position: "relative",
+          fontSize: u(268),
+          fontWeight: 900,
+          color: "#0f172a",
+          fontFamily:
+            'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
+          letterSpacing: u(-8),
+          lineHeight: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <span
-          style={{
-            fontSize: u(268),
-            fontWeight: 900,
-            color: "#0f172a",
-            fontFamily:
-              'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
-            letterSpacing: u(-8),
-            lineHeight: 1,
-          }}
-        >
-          B
-        </span>
-      </div>
+        B
+      </span>
     </div>
   );
 }
