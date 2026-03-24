@@ -10,6 +10,7 @@ import {
   CURRENCIES,
 } from "@/lib/constants";
 import type { CurrencyCode } from "@/lib/constants";
+import { sanitizeFxPatch } from "@/lib/fx-rates";
 import type { Locale } from "@/lib/i18n/messages";
 
 async function requireUserAndProfile(): Promise<{
@@ -107,6 +108,53 @@ export async function renameLedger(ledgerId: string, name: string) {
     .update({ name: trimmed })
     .eq("id", ledgerId)
     .is("deleted_at", null);
+  if (error) throw new Error(error.message);
+  revalidatePath("/app");
+}
+
+export async function updateLedgerFxRates(
+  ledgerId: string,
+  patch: Record<string, unknown>
+) {
+  await requireWrite();
+  const cleaned = sanitizeFxPatch(patch);
+  if (Object.keys(cleaned).length === 0) {
+    throw new Error("請輸入有效匯率（正數）");
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("未登入");
+
+  const { data: row, error: selErr } = await supabase
+    .from("ledgers")
+    .select("fx_rates_to_hkd")
+    .eq("id", ledgerId)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (selErr) throw new Error(selErr.message);
+  if (!row) throw new Error("找不到生意簿");
+
+  const prev =
+    row.fx_rates_to_hkd &&
+    typeof row.fx_rates_to_hkd === "object" &&
+    !Array.isArray(row.fx_rates_to_hkd)
+      ? { ...(row.fx_rates_to_hkd as Record<string, unknown>) }
+      : {};
+
+  const next = { ...prev, ...cleaned };
+
+  const { error } = await supabase
+    .from("ledgers")
+    .update({ fx_rates_to_hkd: next })
+    .eq("id", ledgerId)
+    .eq("user_id", user.id)
+    .is("deleted_at", null);
+
   if (error) throw new Error(error.message);
   revalidatePath("/app");
 }

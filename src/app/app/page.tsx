@@ -10,6 +10,7 @@ import {
   pickChartCurrency,
   type TxForChart,
 } from "@/lib/dashboard-chart-data";
+import { convertChartTxsToHkd, mergeFxRatesToHkd } from "@/lib/fx-rates";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { parseQuickAddIncomePrefill } from "@/lib/app-prefill";
 
@@ -47,7 +48,7 @@ export default async function AppPage({
 
   const { data: ledgers } = await supabase
     .from("ledgers")
-    .select("id, name")
+    .select("id, name, fx_rates_to_hkd")
     .is("deleted_at", null)
     .order("created_at", { ascending: true });
 
@@ -136,7 +137,27 @@ export default async function AppPage({
     expense: v.expense,
   }));
 
-  const chartCurrency = pickChartCurrency(sums, chartTxs);
+  const activeLedgerRow = list.find((l) => l.id === activeLedgerId);
+  const fxMerged = mergeFxRatesToHkd(activeLedgerRow?.fx_rates_to_hkd);
+
+  const chartCurrencySet = new Set(chartTxs.map((t) => t.currency));
+  const useFxCharts = chartCurrencySet.size > 1;
+
+  let chartTxsForCharts = chartTxs;
+  let chartCurrency = pickChartCurrency(sums, chartTxs);
+  if (useFxCharts) {
+    chartTxsForCharts = convertChartTxsToHkd(chartTxs, fxMerged);
+    chartCurrency = "HKD";
+  }
+
+  const fxFormCurrencies =
+    useFxCharts && activeLedgerId
+      ? [...chartCurrencySet].filter((c) => c !== "HKD").sort()
+      : [];
+
+  const fxMergedForClient = Object.fromEntries(
+    fxFormCurrencies.map((c) => [c, fxMerged[c as keyof typeof fxMerged] ?? 1])
+  ) as Record<string, number>;
 
   return (
     <DashboardClient
@@ -151,8 +172,11 @@ export default async function AppPage({
       categories={categories}
       transactions={transactions}
       sums={sums}
-      chartTxs={chartTxs}
+      chartTxs={chartTxsForCharts}
       chartCurrency={chartCurrency}
+      fxChartsUnified={useFxCharts}
+      fxFormCurrencies={fxFormCurrencies}
+      fxMergedRates={fxMergedForClient}
       reportYear={y}
       reportMonth={m}
       quickAddIncomePrefill={quickAddIncomePrefill}

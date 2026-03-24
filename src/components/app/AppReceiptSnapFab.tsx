@@ -70,7 +70,7 @@ export function AppReceiptSnapFab() {
       />
       <button
         type="button"
-        className="print:hidden fixed z-[45] flex h-[4.25rem] w-[4.25rem] shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-[0_8px_28px_rgba(147,51,234,0.45)] transition hover:bg-brand-hover hover:shadow-[0_10px_32px_rgba(147,51,234,0.5)] focus-visible:outline focus-visible:ring-4 focus-visible:ring-brand/35 active:scale-[0.97] sm:h-[4.5rem] sm:w-[4.5rem]"
+        className="print:hidden fixed z-[45] flex max-w-[min(calc(100vw-2rem),15.5rem)] items-center gap-2.5 rounded-full border border-white/15 bg-brand py-2.5 pl-2.5 pr-3.5 text-left text-white shadow-[0_8px_28px_rgba(147,51,234,0.45)] transition hover:bg-brand-hover hover:shadow-[0_10px_32px_rgba(147,51,234,0.5)] focus-visible:outline focus-visible:ring-4 focus-visible:ring-brand/35 active:scale-[0.98] sm:gap-3 sm:py-3 sm:pl-3 sm:pr-4"
         style={{
           bottom: "max(1.25rem, env(safe-area-inset-bottom, 0px))",
           right: "max(1rem, env(safe-area-inset-right, 0px))",
@@ -81,7 +81,20 @@ export function AppReceiptSnapFab() {
         aria-label={t("dashboard.fabQuickSnapAria")}
         title={t("dashboard.fabQuickSnapHint")}
       >
-        <CameraGlyph className="h-[1.85rem] w-[1.85rem] sm:h-8 sm:w-8" />
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/20 sm:h-12 sm:w-12"
+          aria-hidden
+        >
+          <CameraGlyph className="h-[1.65rem] w-[1.65rem] sm:h-7 sm:w-7" />
+        </span>
+        <span className="min-w-0 flex-1 select-none leading-tight">
+          <span className="block text-sm font-bold tracking-tight sm:text-base">
+            {t("dashboard.fabQuickSnapLine1")}
+          </span>
+          <span className="mt-0.5 block text-[11px] font-medium text-white/90 sm:text-xs">
+            {t("dashboard.fabQuickSnapLine2")}
+          </span>
+        </span>
       </button>
     </>
   );

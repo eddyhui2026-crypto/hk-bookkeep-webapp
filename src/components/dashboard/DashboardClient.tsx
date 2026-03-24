@@ -24,6 +24,7 @@ import {
 } from "@/lib/constants";
 import { useAppSnap } from "@/components/app/AppSnapContext";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { LedgerFxRatesForm } from "@/components/dashboard/LedgerFxRatesForm";
 import type { TxForChart } from "@/lib/dashboard-chart-data";
 import { categoryLabel } from "@/lib/category-label";
 import type { QuickAddIncomePrefill } from "@/lib/app-prefill";
@@ -61,6 +62,9 @@ export function DashboardClient({
   sums,
   chartTxs,
   chartCurrency,
+  fxChartsUnified = false,
+  fxFormCurrencies = [],
+  fxMergedRates = {},
   reportYear,
   reportMonth,
   quickAddIncomePrefill,
@@ -78,6 +82,9 @@ export function DashboardClient({
   sums: { currency: string; income: number; expense: number }[];
   chartTxs: TxForChart[];
   chartCurrency: string;
+  fxChartsUnified?: boolean;
+  fxFormCurrencies?: string[];
+  fxMergedRates?: Record<string, number>;
   reportYear: number;
   reportMonth: number;
   quickAddIncomePrefill: QuickAddIncomePrefill;
@@ -611,6 +618,18 @@ export function DashboardClient({
           )}
         </div>
       </section>
+
+      {activeLedgerId && fxChartsUnified && fxFormCurrencies.length > 0 && (
+        <>
+          <p className="text-sm text-muted">{t("dashboard.fxChartsNote")}</p>
+          <LedgerFxRatesForm
+            ledgerId={activeLedgerId}
+            currencies={fxFormCurrencies}
+            mergedRates={fxMergedRates}
+            canWrite={canWrite && !readOnly}
+          />
+        </>
+      )}
 
       {activeLedgerId && (
         <DashboardCharts

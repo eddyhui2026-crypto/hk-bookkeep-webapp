@@ -372,6 +372,8 @@ export const messages = {
       receiptDownload: "下載收據",
       receiptLoading: "載入中…",
       fabQuickSnap: "影收據入數",
+      fabQuickSnapLine1: "影收據",
+      fabQuickSnapLine2: "一唧開相機，影完再入金額",
       fabQuickSnapAria: "用相機影收據，然後填金額同分類",
       fabQuickSnapHint: "唧一下會開相機；影完會跳去下面「快速記一筆」，再填金額、支出／收入同「加入」。",
       receiptClose: "關閉",
@@ -399,6 +401,17 @@ export const messages = {
       chart6mo: "近 6 個月收入與支出（{currency}）",
       chartExpensePie: "本月支出 · 分類（{currency}）",
       chartIncomePie: "本月收入 · 分類（{currency}）",
+      fxChartsNote:
+        "你本簿有多於一種貨幣；以下圖表已將所有金額折合為港幣顯示。可喺下面調整匯率（約數，非即時市價）。",
+      fxTitle: "圖表用匯率（折合 HKD）",
+      fxHint:
+        "每欄表示「1 單位該幣 = 幾多 HKD」。改完請按儲存；只影響圖表與分類統計，唔會改你輸入嘅原始金額。",
+      fxDisclaimer:
+        "匯率為參考用，唔代表銀行或稅局報價。",
+      fxRowLabel: "{code} 兌港幣",
+      fxSave: "儲存匯率",
+      fxSaving: "儲存中…",
+      fxSaved: "已儲存，圖表會用新匯率。",
       chartEmpty: "暫未有足夠紀錄顯示圖表；加幾筆交易就會更清晰。",
       chartPieEmpty: "本月此類暫無紀錄",
       chartOther: "其他",
@@ -839,6 +852,8 @@ export const messages = {
       receiptDownload: "Download receipt",
       receiptLoading: "Loading…",
       fabQuickSnap: "Snap receipt",
+      fabQuickSnapLine1: "Snap receipt",
+      fabQuickSnapLine2: "Tap to open the camera, then enter the amount",
       fabQuickSnapAria: "Open the camera for a receipt, then enter amount and category",
       fabQuickSnapHint:
         "Opens the camera; after the photo you’ll jump to Quick entry—add amount, income/expense, then Add.",
@@ -867,6 +882,17 @@ export const messages = {
       chart6mo: "Income vs expense — last 6 months ({currency})",
       chartExpensePie: "This month — expenses by category ({currency})",
       chartIncomePie: "This month — income by category ({currency})",
+      fxChartsNote:
+        "This ledger uses more than one currency. Charts convert everything to HKD using the rates below (approximate, not live FX).",
+      fxTitle: "Chart rates (to HKD)",
+      fxHint:
+        "Each field is “1 unit of this currency = how many HKD”. Saving only affects charts and category breakdowns—not your stored amounts.",
+      fxDisclaimer:
+        "Rates are indicative only—not bank or tax authority quotes.",
+      fxRowLabel: "{code} to HKD",
+      fxSave: "Save rates",
+      fxSaving: "Saving…",
+      fxSaved: "Saved. Charts will use the new rates.",
       chartEmpty: "Not enough data for charts yet — add a few transactions.",
       chartPieEmpty: "No records of this type this month",
       chartOther: "Other",
