@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
+/* Vivid purple / pink / teal accents on soft lavender */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf5ff;
+  --foreground: #312e81;
+  --card: #ffffff;
+  --border: #e9d5ff;
+  --muted: #64748b;
+  --brand: #9333ea;
+  --brand-hover: #7c3aed;
+  --brand-accent: #ec4899;
+  --income: #0d9488;
+  --expense: #e11d48;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1e1b4b;
+    --foreground: #f5f3ff;
+    --card: #312e81;
+    --border: #5b21b6;
+    --muted: #c4b5fd;
+    --brand: #a78bfa;
+    --brand-hover: #8b5cf6;
+    --brand-accent: #f472b6;
+    --income: #2dd4bf;
+    --expense: #fb7185;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-accent: var(--brand-accent);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* @page 勿嵌在 @media 內，否則 Tailwind/PostCSS 有機會報 globals.css 語法錯 */
+@page {
+  size: a4 landscape;
+  margin: 10mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* 後備：部分「另存 PDF」仍會畫出頂欄；與 Tailwind print:hidden 雙重保險 */
+  [data-app-header] {
+    display: none !important;
+  }
 }

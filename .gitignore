@@ -32,10 +32,14 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.local.example
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# 如有自托管字體可放 public/fonts（可選）
+public/fonts/*.woff
+public/fonts/*.woff2
