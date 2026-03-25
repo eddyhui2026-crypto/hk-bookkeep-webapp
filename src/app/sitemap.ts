@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getAllArticlesMeta } from "@/lib/articles/load";
+import { getMarketFromEnv } from "@/lib/market";
 import { SITE_URL } from "@/lib/env";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const articles = getAllArticlesMeta();
+  const articles = getAllArticlesMeta(getMarketFromEnv());
   const articleEntries: MetadataRoute.Sitemap = articles.map((a) => ({
     url: `${SITE_URL}/articles/${a.slug}`,
     lastModified: new Date(a.dateModified ?? a.datePublished),

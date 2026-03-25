@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleDetailClient } from "@/components/articles/ArticleDetailClient";
-import { getArticleBySlug, getArticleSlugs } from "@/lib/articles/load";
+import {
+  getArticleBySlug,
+  getArticleSlugsForBuild,
+} from "@/lib/articles/load";
+import { getSiteName } from "@/lib/market";
+import { getMarket } from "@/lib/market-server";
 import { SITE_URL } from "@/lib/env";
 
 export function generateStaticParams() {
-  return getArticleSlugs().map((slug) => ({ slug }));
+  return getArticleSlugsForBuild().map((slug) => ({ slug }));
 }
 
 export const dynamicParams = false;
@@ -15,8 +20,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const market = await getMarket();
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = getArticleBySlug(market, slug);
   if (!article) return { title: "文章" };
 
   const url = `${SITE_URL}/articles/${article.slug}`;
@@ -42,8 +48,10 @@ export default async function ArticlePage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const market = await getMarket();
+  const site = getSiteName(market);
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = getArticleBySlug(market, slug);
   if (!article) notFound();
 
   const jsonLd = {
@@ -55,12 +63,12 @@ export default async function ArticlePage({
     dateModified: `${(article.dateModified ?? article.datePublished)}T00:00:00.000+08:00`,
     author: {
       "@type": "Organization",
-      name: "HKBookkeep",
+      name: site,
       url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
-      name: "HKBookkeep",
+      name: site,
       url: SITE_URL,
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/articles/${article.slug}` },

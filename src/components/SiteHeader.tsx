@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/env";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { getSiteName } from "@/lib/market";
 
 export function SiteHeader() {
+  const market = useMarket();
   const { locale, setLocale, t } = useI18n();
+  const siteName = getSiteName(market);
 
   return (
     <header className="border-b border-border bg-card/90 backdrop-blur">
@@ -14,7 +17,7 @@ export function SiteHeader() {
           href="/"
           className="text-lg font-semibold tracking-tight text-foreground"
         >
-          {SITE_NAME}
+          {siteName}
         </Link>
         <nav className="flex flex-wrap items-center gap-3 text-base text-muted sm:text-sm">
           <Link href="/articles" className="hover:text-foreground">
@@ -26,6 +29,7 @@ export function SiteHeader() {
           <Link href="/contact" className="hover:text-foreground">
             {t("nav.contact")}
           </Link>
+          {market !== "tw" ? (
           <button
             type="button"
             onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
@@ -33,6 +37,7 @@ export function SiteHeader() {
           >
             {t("localeSwitch")}
           </button>
+          ) : null}
           <Link
             href="/login"
             className="rounded-full bg-brand px-3 py-1.5 text-white shadow-sm hover:bg-brand-hover"

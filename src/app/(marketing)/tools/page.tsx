@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { ToolsIndexClient } from "@/components/ToolsIndexClient";
+import { getMarket } from "@/lib/market-server";
+import { getMarketingToolPageMetadata } from "@/lib/market-metadata";
 
-export const metadata: Metadata = {
-  title: "免費工具",
-  description: "利得稅粗估、Freelancer 時薪倒算、網店廣告占比 — HKBookkeep",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const market = await getMarket();
+  return getMarketingToolPageMetadata(market, "tools-index");
+}
 
 export default function ToolsIndexPage() {
   return <ToolsIndexClient />;

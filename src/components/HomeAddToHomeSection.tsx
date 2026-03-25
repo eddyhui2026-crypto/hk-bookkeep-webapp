@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { getMarketingHost } from "@/lib/market";
 
 /** 示意：Safari 頂部網址列 */
-function IllustrationIosSafariTop() {
+function IllustrationIosSafariTop({ host }: { host: string }) {
   return (
     <svg
       viewBox="0 0 240 88"
@@ -28,7 +30,7 @@ function IllustrationIosSafariTop() {
         className="fill-foreground/70 text-[10px]"
         style={{ fontFamily: "system-ui, sans-serif" }}
       >
-        hkbookkeep.harbix.app
+        {host}
       </text>
       <text
         x="120"
@@ -44,7 +46,7 @@ function IllustrationIosSafariTop() {
 }
 
 /** 示意：iPhone 底欄，中間為「分享」圖示（方框＋箭嘴） */
-function IllustrationIosShareBar() {
+function IllustrationIosShareBar({ hostShort }: { hostShort: string }) {
   return (
     <svg
       viewBox="0 0 240 100"
@@ -67,7 +69,7 @@ function IllustrationIosShareBar() {
         className="fill-muted text-[11px]"
         style={{ fontFamily: "system-ui, sans-serif" }}
       >
-        safari · hkbookkeep…
+        safari · {hostShort}
       </text>
       <line x1="20" y1="48" x2="220" y2="48" className="stroke-border" strokeWidth="1" />
       <g transform="translate(0, 52)">
@@ -289,6 +291,9 @@ function StepBlock({ stepLabel, title, body, figure, figCaption }: StepBlockProp
 
 export function HomeAddToHomeSection() {
   const { t } = useI18n();
+  const market = useMarket();
+  const host = getMarketingHost(market);
+  const hostShort = host.length > 14 ? `${host.slice(0, 11)}…` : host;
 
   return (
     <section className="mt-16 rounded-3xl border border-brand/25 bg-gradient-to-b from-brand/10 via-card to-card p-6 shadow-sm sm:p-8">
@@ -326,14 +331,14 @@ export function HomeAddToHomeSection() {
               stepLabel={t("home.addToHomeStepLabel", { n: "1" })}
               title={t("home.addToHomeIosStep1Title")}
               body={t("home.addToHomeIosStep1Body")}
-              figure={<IllustrationIosSafariTop />}
+              figure={<IllustrationIosSafariTop host={host} />}
               figCaption={t("home.addToHomeIosFig1")}
             />
             <StepBlock
               stepLabel={t("home.addToHomeStepLabel", { n: "2" })}
               title={t("home.addToHomeIosStep2Title")}
               body={t("home.addToHomeIosStep2Body")}
-              figure={<IllustrationIosShareBar />}
+              figure={<IllustrationIosShareBar hostShort={hostShort} />}
               figCaption={t("home.addToHomeIosFig2")}
             />
             <StepBlock

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { getMarket } from "@/lib/market-server";
+import { getMarketingToolPageMetadata } from "@/lib/market-metadata";
 
-export const metadata: Metadata = {
-  title: "Freelancer 時薪倒算",
-    description: "按目標月入與工時估算需達時薪。HKBookkeep 免費工具。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const market = await getMarket();
+  return getMarketingToolPageMetadata(market, "freelance-rate");
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

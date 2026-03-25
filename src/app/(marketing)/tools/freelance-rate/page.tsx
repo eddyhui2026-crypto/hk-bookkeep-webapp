@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { displayNumberLocale } from "@/lib/display-number-locale";
 
 export default function FreelanceRatePage() {
+  const market = useMarket();
   const { locale, t } = useI18n();
-  const [target, setTarget] = useState("30000");
+  const [target, setTarget] = useState(
+    market === "hk" ? "30000" : market === "tw" ? "80000" : "4000"
+  );
   const [days, setDays] = useState("20");
   const [hours, setHours] = useState("6");
   const [expenses, setExpenses] = useState("5000");
-  const numLocale = locale === "en" ? "en-HK" : "zh-HK";
+  const numLocale = displayNumberLocale(market, locale);
 
   const rate = useMemo(() => {
     const tg = Number(target);

@@ -18,7 +18,7 @@ const termsZh: LegalDocument = {
     {
       title: "1. 營運者與聯絡方式",
       paragraphs: [
-        "本服務「HKBookkeep」（網址 https://hkbookkeep.harbix.app）由 Heartbeat 營運。聯絡方式：電郵 bookkeep@harbix.app。",
+        "本服務「HKBookkeep」（網址 https://hkbookkeep.harbix.app）由 Harbix 營運。聯絡方式：電郵 bookkeep@harbix.app。",
       ],
     },
     {
@@ -36,7 +36,7 @@ const termsZh: LegalDocument = {
     {
       title: "4. 訂閱、試用、定價與付款（Stripe）",
       paragraphs: [
-        "本服務收費以網站顯示為準（例如港幣 38 元／月、港幣 380 元／年；14 日免費試用，試用開始唔強制綁定付款卡；實際以結帳頁為準）。",
+        "本服務收費以網站顯示為準（例如港幣 38 元／月、港幣 380 元／年）。新帳戶可享 14 日免費試用，試用由本應用程式計算及管理；試用期內唔會經 Stripe 處理付款。試用結束後若你選擇訂閱付費方案，須經 Stripe 結帳完成付款，實際金額及顯示以結帳頁為準。",
         "所有付款均由第三方 Stripe 處理。Stripe 商戶註冊地及收款主體以 Stripe 結帳頁、收據及 Stripe 介面顯示為準。你同意受 Stripe 條款約束。",
         "你可透過我哋提供嘅連結進入 Stripe Customer Portal，以更新付款方式、查閱帳單及取消訂閱。取消之生效日及計費週期以 Stripe 及你帳戶狀態為準。",
       ],
@@ -72,7 +72,7 @@ const termsZh: LegalDocument = {
     {
       title: "9. 免責與責任限制",
       paragraphs: [
-        "在法律允許嘅最大範圍內，本服務按「現狀」提供；因使用或無法使用本服務所引致之損失，Heartbeat 嘅責任以你喺該索賠發生前 12 個月內就本服務已實際支付畀我哋之費用總額為上限（如該期間無付款則以港幣零元計）。部分司法管轄區唔允許某啲免責，以該地法例為準。",
+        "在法律允許嘅最大範圍內，本服務按「現狀」提供；因使用或無法使用本服務所引致之損失，Harbix 嘅責任以你喺該索賠發生前 12 個月內就本服務已實際支付畀我哋之費用總額為上限（如該期間無付款則以港幣零元計）。部分司法管轄區唔允許某啲免責，以該地法例為準。",
       ],
     },
     {
@@ -97,7 +97,7 @@ const termsEn: LegalDocument = {
     {
       title: "1. Operator and contact",
       paragraphs: [
-        'The service "HKBookkeep" (https://hkbookkeep.harbix.app) is operated by Heartbeat. Contact: bookkeep@harbix.app.',
+        'The service "HKBookkeep" (https://hkbookkeep.harbix.app) is operated by Harbix. Contact: bookkeep@harbix.app.',
       ],
     },
     {
@@ -115,7 +115,7 @@ const termsEn: LegalDocument = {
     {
       title: "4. Subscription, trial, pricing, and payments (Stripe)",
       paragraphs: [
-        "Fees are as shown on the website (e.g. HK$38/month, HK$380/year; 14-day free trial without mandatory card binding at trial start; the checkout page prevails).",
+        "Fees are as shown on the website (e.g. HK$38/month, HK$380/year). New accounts receive a 14-day free trial tracked in the app; Stripe is not used to take payment during the trial. After the trial, if you subscribe to a paid plan, payment is completed through Stripe; amounts and terms on the checkout page prevail.",
         "Payments are processed by Stripe. Stripe’s merchant location and billing entity are as shown on Stripe checkout, receipts, and the Stripe interface. You agree to Stripe’s terms.",
         "You may use our links to open the Stripe Customer Portal to update payment methods, view invoices, and cancel subscriptions. Effective cancellation dates and billing cycles follow Stripe and your account status.",
       ],
@@ -176,7 +176,7 @@ const privacyZh: LegalDocument = {
     {
       title: "1. 資料控制者",
       paragraphs: [
-        "負責處理你個人資料嘅一方為 Heartbeat。聯絡：bookkeep@harbix.app。",
+        "負責處理你個人資料嘅一方為 Harbix。聯絡：bookkeep@harbix.app。",
       ],
     },
     {
@@ -260,7 +260,7 @@ const privacyEn: LegalDocument = {
     {
       title: "1. Data controller",
       paragraphs: [
-        "The data controller is Heartbeat. Contact: bookkeep@harbix.app.",
+        "The data controller is Harbix. Contact: bookkeep@harbix.app.",
       ],
     },
     {

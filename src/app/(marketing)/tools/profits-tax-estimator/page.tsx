@@ -3,20 +3,24 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { displayNumberLocale } from "@/lib/display-number-locale";
+import { estimateProfitsTaxDemo } from "@/lib/tax-tools";
 
 export default function ProfitsTaxEstimatorPage() {
+  const market = useMarket();
   const { locale, t } = useI18n();
-  const [profit, setProfit] = useState("200000");
-  const numLocale = locale === "en" ? "en-HK" : "zh-HK";
+  const [profit, setProfit] = useState(
+    market === "hk" ? "200000" : market === "tw" ? "800000" : "50000"
+  );
+  const numLocale = displayNumberLocale(market, locale);
 
   const est = useMemo(() => {
     const p = Number(profit);
-    if (!Number.isFinite(p) || p <= 0) return null;
-    const first = Math.min(p, 2_000_000);
-    const rest = Math.max(p - 2_000_000, 0);
-    const tax = first * 0.0825 + rest * 0.165;
-    return { tax, eff: p > 0 ? (tax / p) * 100 : 0 };
-  }, [profit]);
+    const r = estimateProfitsTaxDemo(market, p);
+    if (!r) return null;
+    return { tax: r.tax, eff: r.effPct };
+  }, [profit, market]);
 
   return (
     <div className="mx-auto max-w-xl px-4 py-16">

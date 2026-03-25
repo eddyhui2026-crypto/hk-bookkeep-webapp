@@ -5,9 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/components/I18nProvider";
-import { SITE_NAME, SITE_URL } from "@/lib/env";
+import { SITE_URL } from "@/lib/env";
+import { useMarket } from "@/components/MarketProvider";
+import { getSiteName } from "@/lib/market";
 
 export function LoginForm() {
+  const market = useMarket();
+  const siteName = getSiteName(market);
   const { t } = useI18n();
   const router = useRouter();
   const sp = useSearchParams();
@@ -117,7 +121,7 @@ export function LoginForm() {
           {t("login.back")}
         </Link>
         <h1 className="mt-4 text-2xl font-semibold text-foreground">
-          {t("login.title", { site: SITE_NAME })}
+          {t("login.title", { site: siteName })}
         </h1>
         <p className="mt-2 text-sm text-muted">{t("login.subtitle")}</p>
 

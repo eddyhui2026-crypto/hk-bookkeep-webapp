@@ -2,12 +2,12 @@ export type Locale = "zh" | "en";
 
 export const LOCALE_STORAGE_KEY = "harbix-locale";
 
-export const messages = {
+export const hkMessages = {
   zh: {
     localeSwitch: "English",
     nav: { articles: "文章", tools: "工具", contact: "聯絡", login: "登入" },
     footer: {
-      rights: "© {year} Heartbeat · HKBookkeep · 非專業稅務或法律意見",
+      rights: "© {year} Harbix · HKBookkeep · 非專業稅務或法律意見",
       terms: "服務條款",
       privacy: "私隱政策",
     },
@@ -29,8 +29,8 @@ export const messages = {
       mockupCategorySample: "交通通訊",
       mockupSubmit: "加入",
       mockupHint: "示意畫面（實際介面以登入後為準）",
-      li1: "HK$38／月 · 年付 HK$380",
-      li2: "14 日試用（唔強制綁卡，以 Stripe 為準）",
+      li1: "HK$38／月 · 年付 HK$380（年付約慳近 2 個月月費）",
+      li2: "14 日免費試用",
       li3: "支援 HKD、CNY、USD 等常用幣種",
       li4: "簡易 Invoice：開單、列印／PDF、預設欄位；可一掣轉記帳收入",
       li5: "首頁即試免費工具，無須登入",
@@ -534,10 +534,10 @@ export const messages = {
   },
   en: {
     localeSwitch: "中文",
-    nav: { tools: "Tools", contact: "Contact", login: "Log in" },
+    nav: { articles: "Articles", tools: "Tools", contact: "Contact", login: "Log in" },
     footer: {
       rights:
-        "© {year} Heartbeat · HKBookkeep · Not professional tax or legal advice",
+        "© {year} Harbix · HKBookkeep · Not professional tax or legal advice",
       terms: "Terms",
       privacy: "Privacy",
     },
@@ -559,8 +559,8 @@ export const messages = {
       mockupCategorySample: "Travel & telecom",
       mockupSubmit: "Add",
       mockupHint: "Illustrative screen (actual UI after sign-in)",
-      li1: "HK$38/mo · HK$380/year",
-      li2: "14-day trial (card not always required; Stripe checkout applies)",
+      li1: "HK$38/mo · HK$380/year (annual ≈ two months free vs monthly)",
+      li2: "14-day free trial",
       li3: "HKD, CNY, USD and common currencies",
       li4: "Simple invoices: create, print/PDF, defaults; book income in one tap",
       li5: "Try free tools on the homepage — no sign-in",
@@ -1070,7 +1070,10 @@ export const messages = {
   },
 } as const;
 
-export type MessageTree = (typeof messages)["zh"];
+/** @deprecated 用 `hkMessages`；保留别名以免舊 import 報錯 */
+export const messages = hkMessages;
+
+export type MessageTree = (typeof hkMessages)["zh"];
 
 function getLeaf(obj: unknown, path: string[]): string | undefined {
   if (!obj || typeof obj !== "object") return undefined;

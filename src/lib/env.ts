@@ -3,8 +3,13 @@ import { z } from "zod";
 const server = z.object({
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  /** 香港（預設）；亦作 TW／SG 未設定時之後備 */
   STRIPE_PRICE_MONTHLY: z.string().optional(),
   STRIPE_PRICE_YEARLY: z.string().optional(),
+  STRIPE_PRICE_MONTHLY_TW: z.string().optional(),
+  STRIPE_PRICE_YEARLY_TW: z.string().optional(),
+  STRIPE_PRICE_MONTHLY_SG: z.string().optional(),
+  STRIPE_PRICE_YEARLY_SG: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   /** Unosend：Dashboard → API Keys，格式通常為 un_… */
   UNOSEND_API_KEY: z.string().optional(),
@@ -35,6 +40,10 @@ export function getServerEnv() {
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_PRICE_MONTHLY: process.env.STRIPE_PRICE_MONTHLY,
     STRIPE_PRICE_YEARLY: process.env.STRIPE_PRICE_YEARLY,
+    STRIPE_PRICE_MONTHLY_TW: process.env.STRIPE_PRICE_MONTHLY_TW,
+    STRIPE_PRICE_YEARLY_TW: process.env.STRIPE_PRICE_YEARLY_TW,
+    STRIPE_PRICE_MONTHLY_SG: process.env.STRIPE_PRICE_MONTHLY_SG,
+    STRIPE_PRICE_YEARLY_SG: process.env.STRIPE_PRICE_YEARLY_SG,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     UNOSEND_API_KEY: process.env.UNOSEND_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,

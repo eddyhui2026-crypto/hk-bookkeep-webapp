@@ -2,19 +2,27 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
-import { getServerEnv, SITE_URL } from "@/lib/env";
+import { getServerEnv } from "@/lib/env";
+import { getMarketFromEnv, marketFromHost, type Market } from "@/lib/market";
+import { getOriginFromApiRequest } from "@/lib/request-site";
+import { stripePriceIdForPlan } from "@/lib/stripe-prices";
 
 export async function POST(request: Request) {
   try {
     const { price } = (await request.json()) as { price?: "monthly" | "yearly" };
     const env = getServerEnv();
-    const priceId =
-      price === "yearly" ? env.STRIPE_PRICE_YEARLY : env.STRIPE_PRICE_MONTHLY;
+    const reqUrl = new URL(request.url);
+    const market: Market = marketFromHost(reqUrl.host) ?? getMarketFromEnv();
+    const plan = price === "yearly" ? "yearly" : "monthly";
+    const priceId = stripePriceIdForPlan(market, plan, env);
     if (!priceId) {
-      return NextResponse.json(
-        { error: "未設定 STRIPE_PRICE_MONTHLY / STRIPE_PRICE_YEARLY" },
-        { status: 500 }
-      );
+      const hint =
+        market === "hk"
+          ? "未設定 STRIPE_PRICE_MONTHLY / STRIPE_PRICE_YEARLY"
+          : market === "tw"
+            ? "未設定 STRIPE_PRICE_MONTHLY_TW / STRIPE_PRICE_YEARLY_TW"
+            : "未設定 STRIPE_PRICE_MONTHLY_SG / STRIPE_PRICE_YEARLY_SG";
+      return NextResponse.json({ error: hint }, { status: 500 });
     }
 
     const supabase = await createClient();
@@ -50,7 +58,7 @@ export async function POST(request: Request) {
         .eq("id", user.id);
     }
 
-    const origin = SITE_URL.replace(/\/$/, "");
+    const origin = getOriginFromApiRequest(request);
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

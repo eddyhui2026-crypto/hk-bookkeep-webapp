@@ -9,10 +9,11 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { getPublicHtmlLang, type Market } from "@/lib/market";
+import { getMessageTree } from "@/lib/i18n/get-message-tree";
 import {
   LOCALE_STORAGE_KEY,
   type Locale,
-  messages,
   translate,
   type MessageTree,
 } from "@/lib/i18n/messages";
@@ -27,17 +28,6 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function readStoredLocale(): Locale {
-  if (typeof window === "undefined") return "zh";
-  try {
-    const v = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    if (v === "en" || v === "zh") return v;
-  } catch {
-    /* ignore */
-  }
-  return "zh";
-}
-
 function subscribeLocale(onChange: () => void) {
   if (typeof window === "undefined") return () => {};
   window.addEventListener(LOCALE_EVENT, onChange);
@@ -48,35 +38,71 @@ function subscribeLocale(onChange: () => void) {
   };
 }
 
-function getLocaleSnapshot(): Locale {
-  return readStoredLocale();
-}
-
-function getServerLocaleSnapshot(): Locale {
-  return "zh";
-}
-
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const locale = useSyncExternalStore(
-    subscribeLocale,
-    getLocaleSnapshot,
-    getServerLocaleSnapshot
-  );
-
-  useEffect(() => {
-    document.documentElement.lang = locale === "en" ? "en" : "zh-HK";
-  }, [locale]);
-
-  const setLocale = useCallback((l: Locale) => {
+export function I18nProvider({
+  children,
+  market,
+}: {
+  children: ReactNode;
+  market: Market;
+}) {
+  const readStored = useCallback((): Locale => {
+    if (market === "tw") return "zh";
+    if (typeof window === "undefined") {
+      return market === "sg" ? "en" : "zh";
+    }
     try {
-      window.localStorage.setItem(LOCALE_STORAGE_KEY, l);
+      const v = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+      if (v === "en" || v === "zh") return v;
     } catch {
       /* ignore */
     }
-    window.dispatchEvent(new Event(LOCALE_EVENT));
-  }, []);
+    return market === "sg" ? "en" : "zh";
+  }, [market]);
 
-  const tree = messages[locale] as MessageTree;
+  const serverSnapshot = useCallback((): Locale => {
+    if (market === "tw") return "zh";
+    if (market === "sg") return "en";
+    return "zh";
+  }, [market]);
+
+  const locale = useSyncExternalStore(
+    subscribeLocale,
+    readStored,
+    serverSnapshot
+  );
+
+  const setLocale = useCallback(
+    (l: Locale) => {
+      if (market === "tw") return;
+      try {
+        window.localStorage.setItem(LOCALE_STORAGE_KEY, l);
+      } catch {
+        /* ignore */
+      }
+      window.dispatchEvent(new Event(LOCALE_EVENT));
+    },
+    [market]
+  );
+
+  useEffect(() => {
+    if (market === "tw" && locale !== "zh") {
+      try {
+        window.localStorage.setItem(LOCALE_STORAGE_KEY, "zh");
+      } catch {
+        /* ignore */
+      }
+      window.dispatchEvent(new Event(LOCALE_EVENT));
+    }
+  }, [market, locale]);
+
+  useEffect(() => {
+    document.documentElement.lang = getPublicHtmlLang(market, locale);
+  }, [market, locale]);
+
+  const tree = useMemo(
+    () => getMessageTree(market, locale),
+    [market, locale]
+  ) as MessageTree;
 
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>) =>

@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
-import { SITE_URL } from "@/lib/env";
+import { getOriginFromApiRequest } from "@/lib/request-site";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const supabase = await createClient();
     const {
@@ -27,7 +27,7 @@ export async function POST() {
     }
 
     const stripe = getStripe();
-    const origin = SITE_URL.replace(/\/$/, "");
+    const origin = getOriginFromApiRequest(request);
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: `${origin}/app`,
