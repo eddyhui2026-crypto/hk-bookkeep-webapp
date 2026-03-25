@@ -1,39 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { parse } from "cookie";
+import {
+  isAllowedSessionSyncOrigin,
+  syncOriginFromRequest,
+} from "@/lib/auth-request-origin";
 import { getPublicEnv } from "@/lib/env";
 import { supabaseCookieOptionsForHost } from "@/lib/supabase/cookie-options";
-
-function isAllowedSessionSyncOrigin(origin: string | null): boolean {
-  if (!origin) return false;
-  try {
-    const u = new URL(origin);
-    if (
-      u.protocol === "http:" &&
-      (u.hostname === "localhost" || u.hostname === "127.0.0.1")
-    )
-      return true;
-    if (u.protocol !== "https:") return false;
-    const h = u.hostname.toLowerCase();
-    return h === "harbix.app" || /^[a-z0-9-]+bookkeep\.harbix\.app$/.test(h);
-  } catch {
-    return false;
-  }
-}
-
-function syncOriginFromRequest(request: Request): string | null {
-  const o = request.headers.get("origin");
-  if (o) return o;
-  const ref = request.headers.get("referer");
-  if (ref) {
-    try {
-      return new URL(ref).origin;
-    } catch {
-      /* ignore */
-    }
-  }
-  return null;
-}
 
 /** OAuth 喺瀏覽器用 localStorage 換票後，把 session 寫入 SSR／middleware 用嘅 http cookies。 */
 export async function POST(request: Request) {

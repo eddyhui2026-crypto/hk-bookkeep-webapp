@@ -14,6 +14,20 @@ export function isAllowedOauthReturnOrigin(origin: string): boolean {
   }
 }
 
+/** Dev localhost OAuth callback (http) — production return origins use HTTPS only. */
+export function isAllowedOauthReturnOriginOrLocalhost(origin: string): boolean {
+  if (isAllowedOauthReturnOrigin(origin)) return true;
+  try {
+    const u = new URL(origin);
+    return (
+      u.protocol === "http:" &&
+      (u.hostname === "localhost" || u.hostname === "127.0.0.1")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function stripTrailingSlash(u: string): string {
   return u.replace(/\/$/, "");
 }
