@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { getSiteName } from "@/lib/market";
 import { HomePhoneMockup } from "@/components/HomePhoneMockup";
 import { HomeAddToHomeSection } from "@/components/HomeAddToHomeSection";
 
@@ -33,6 +35,7 @@ const AUDIENCE_NOT_KEYS = [
 
 export function HomePageClient() {
   const { t } = useI18n();
+  const market = useMarket();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
@@ -53,6 +56,7 @@ export function HomePageClient() {
         </div>
         <div className="mt-10 flex shrink-0 justify-center lg:mt-0 lg:block lg:justify-self-end lg:pt-1">
           <HomePhoneMockup
+            appTitle={getSiteName(market)}
             appSubtitle={t("home.mockupAppSubtitle")}
             receiptLabel={t("home.mockupReceipt")}
             expenseLabel={t("home.mockupExpense")}
