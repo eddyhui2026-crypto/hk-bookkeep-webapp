@@ -10,17 +10,23 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
+  const [errDetail, setErrDetail] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("idle");
+    setErrDetail(null);
     const r = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, name, message, website }),
     });
+    const j = (await r.json().catch(() => ({}))) as { error?: string };
     if (r.ok) setStatus("ok");
-    else setStatus("err");
+    else {
+      setStatus("err");
+      setErrDetail(typeof j.error === "string" && j.error ? j.error : null);
+    }
   }
 
   return (
@@ -62,7 +68,10 @@ export default function ContactPage() {
         <p className="mt-4 text-sm text-income">{t("contact.ok")}</p>
       )}
       {status === "err" && (
-        <p className="mt-4 text-sm text-expense">{t("contact.err")}</p>
+        <div className="mt-4 space-y-1 text-sm text-expense">
+          <p>{t("contact.err")}</p>
+          {errDetail && <p className="text-xs opacity-90">{errDetail}</p>}
+        </div>
       )}
     </div>
   );
