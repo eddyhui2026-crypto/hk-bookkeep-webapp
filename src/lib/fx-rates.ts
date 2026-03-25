@@ -14,6 +14,7 @@ export const DEFAULT_FX_TO_HKD: Record<CurrencyCode, number> = {
   SGD: 5.82,
   MOP: 0.97,
   TWD: 0.24,
+  MYR: 1.68,
 };
 
 function parsePositive(n: unknown): number | null {

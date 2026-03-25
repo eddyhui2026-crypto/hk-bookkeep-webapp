@@ -11,6 +11,7 @@ export const CURRENCIES = [
   "SGD",
   "MOP",
   "TWD",
+  "MYR",
 ] as const;
 
 export type CurrencyCode = (typeof CURRENCIES)[number];
@@ -39,12 +40,14 @@ export function currenciesOrderedForMarket(m: Market): CurrencyCode[] {
         "EUR",
         "SGD",
         "GBP",
+        "MYR",
         "MOP",
       ]);
     case "sg":
       return prioritize([
         "SGD",
         "USD",
+        "MYR",
         "HKD",
         "CNY",
         "EUR",
@@ -61,6 +64,7 @@ export function currenciesOrderedForMarket(m: Market): CurrencyCode[] {
         "MOP",
         "EUR",
         "SGD",
+        "MYR",
         "GBP",
         "JPY",
         "TWD",
