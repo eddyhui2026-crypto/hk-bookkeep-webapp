@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
 
 const KINDS = [
@@ -17,20 +16,12 @@ type Kind = (typeof KINDS)[number];
 
 export function AppFeedbackForm() {
   const { t } = useI18n();
-  const pathname = usePathname();
   const [kind, setKind] = useState<Kind>("bug");
   const [message, setMessage] = useState("");
   const [pageHint, setPageHint] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<"idle" | "ok" | "err">("idle");
   const [errDetail, setErrDetail] = useState<string | null>(null);
-  const pageHintPrimed = useRef(false);
-
-  useEffect(() => {
-    if (!pathname || pageHintPrimed.current) return;
-    setPageHint(pathname);
-    pageHintPrimed.current = true;
-  }, [pathname]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
