@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useI18n } from "@/components/I18nProvider";
-import { CURRENCIES } from "@/lib/constants";
+import { useMarket } from "@/components/MarketProvider";
+import { currenciesOrderedForMarket } from "@/lib/constants";
 import type { InvoiceDefaultsEditorValues } from "@/lib/invoice-types";
 import {
   saveInvoiceDefaults,
@@ -16,6 +17,8 @@ export function InvoiceDefaultsForm({
   initial: InvoiceDefaultsEditorValues;
 }) {
   const { t } = useI18n();
+  const market = useMarket();
+  const currencyOptions = currenciesOrderedForMarket(market);
   const [state, formAction, pending] = useActionState<
     SaveInvoiceDefaultsState,
     FormData
@@ -132,7 +135,7 @@ export function InvoiceDefaultsForm({
               className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
             >
               <option value="">{t("invoice.defaultsUnsetSelect")}</option>
-              {CURRENCIES.map((c) => (
+              {currencyOptions.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

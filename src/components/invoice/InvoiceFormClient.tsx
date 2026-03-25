@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
 import {
   createInvoice,
   updateInvoice,
   type CreateInvoiceState,
 } from "@/app/app/invoice/actions";
-import { CURRENCIES } from "@/lib/constants";
+import { currenciesOrderedForMarket } from "@/lib/constants";
 import type { InvoiceNewFormDefaults } from "@/lib/invoice-types";
 
 export function InvoiceFormClient({
@@ -23,6 +24,8 @@ export function InvoiceFormClient({
   editAmount?: string;
 }) {
   const { t } = useI18n();
+  const market = useMarket();
+  const currencyOptions = currenciesOrderedForMarket(market);
   const formActionHandler =
     editInvoiceId != null && editInvoiceId !== ""
       ? updateInvoice.bind(null, editInvoiceId)
@@ -177,7 +180,7 @@ export function InvoiceFormClient({
               defaultValue={defaults.currency}
               className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
             >
-              {CURRENCIES.map((c) => (
+              {currencyOptions.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

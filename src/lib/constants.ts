@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n/messages";
+import type { Market } from "@/lib/market";
 
 export const CURRENCIES = [
   "HKD",
@@ -9,28 +10,87 @@ export const CURRENCIES = [
   "JPY",
   "SGD",
   "MOP",
+  "TWD",
 ] as const;
 
 export type CurrencyCode = (typeof CURRENCIES)[number];
 
-/** Invoice 表單／DB 用，與快速記一筆 CURRENCIES 一致 */
-export function normalizeInvoiceCurrency(input: unknown): CurrencyCode {
-  const s = String(input ?? "").trim();
-  return CURRENCIES.includes(s as CurrencyCode) ? (s as CurrencyCode) : "HKD";
+export function defaultCurrencyForMarket(m: Market): CurrencyCode {
+  if (m === "tw") return "TWD";
+  if (m === "sg") return "SGD";
+  return "HKD";
 }
 
-/** 列表／列印：JPY 唔顯示小數 */
+/** 本土幣置頂，其餘按該市場較常見次序，最尾為較少用地區場景嘅幣種 */
+export function currenciesOrderedForMarket(m: Market): CurrencyCode[] {
+  const prioritize = (order: CurrencyCode[]): CurrencyCode[] => {
+    const set = new Set(order);
+    const rest = CURRENCIES.filter((c) => !set.has(c));
+    return [...order, ...rest];
+  };
+  switch (m) {
+    case "tw":
+      return prioritize([
+        "TWD",
+        "USD",
+        "JPY",
+        "HKD",
+        "CNY",
+        "EUR",
+        "SGD",
+        "GBP",
+        "MOP",
+      ]);
+    case "sg":
+      return prioritize([
+        "SGD",
+        "USD",
+        "HKD",
+        "CNY",
+        "EUR",
+        "GBP",
+        "JPY",
+        "TWD",
+        "MOP",
+      ]);
+    default:
+      return prioritize([
+        "HKD",
+        "CNY",
+        "USD",
+        "MOP",
+        "EUR",
+        "SGD",
+        "GBP",
+        "JPY",
+        "TWD",
+      ]);
+  }
+}
+
+/** Invoice 表單／DB 用，與快速記一筆 CURRENCIES 一致 */
+export function normalizeInvoiceCurrency(
+  input: unknown,
+  fallback: CurrencyCode = "HKD"
+): CurrencyCode {
+  const s = String(input ?? "").trim();
+  return CURRENCIES.includes(s as CurrencyCode)
+    ? (s as CurrencyCode)
+    : fallback;
+}
+
+/** 列表／列印：JPY／TWD 唔強制顯示小數 */
 export function formatCurrencyAmount(
   n: number,
   currency: string,
   numLocale: string
 ): string {
-  const jpy = currency === "JPY";
+  const intMinor = currency === "JPY" || currency === "TWD";
   return new Intl.NumberFormat(numLocale, {
     style: "currency",
     currency,
-    minimumFractionDigits: jpy ? 0 : 2,
-    maximumFractionDigits: jpy ? 0 : 2,
+    minimumFractionDigits: intMinor ? 0 : 2,
+    maximumFractionDigits: intMinor ? 0 : 2,
   }).format(n);
 }
 
@@ -192,9 +252,16 @@ function seedRowsFromDefs(
 
 export function categorySeedRowsForNewLedger(
   template: "freelance" | "shop" | undefined,
-  locale: Locale
+  locale: Locale,
+  market: Market
 ): CategorySeedRow[] {
-  if (template === "freelance") return seedRowsFromDefs(FREELANCE_DEFS, locale);
+  if (template === "freelance") {
+    const defs =
+      market === "hk"
+        ? FREELANCE_DEFS
+        : FREELANCE_DEFS.filter((d) => d.slug !== "cat_fl_mpf");
+    return seedRowsFromDefs(defs, locale);
+  }
   if (template === "shop") return seedRowsFromDefs(SHOP_DEFS, locale);
   return seedRowsFromDefs(DEFAULT_DEFS, locale);
 }

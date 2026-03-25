@@ -13,6 +13,8 @@ import {
 import { convertChartTxsToHkd, mergeFxRatesToHkd } from "@/lib/fx-rates";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { parseQuickAddIncomePrefill } from "@/lib/app-prefill";
+import { getMarket } from "@/lib/market-server";
+import { defaultCurrencyForMarket } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +31,8 @@ export default async function AppPage({
   }>;
 }) {
   const supabase = await createClient();
+  const market = await getMarket();
+  const homeCurrency = defaultCurrencyForMarket(market);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -144,7 +148,7 @@ export default async function AppPage({
   const useFxCharts = chartCurrencySet.size > 1;
 
   let chartTxsForCharts = chartTxs;
-  let chartCurrency = pickChartCurrency(sums, chartTxs);
+  let chartCurrency = pickChartCurrency(sums, chartTxs, homeCurrency);
   if (useFxCharts) {
     chartTxsForCharts = convertChartTxsToHkd(chartTxs, fxMerged);
     chartCurrency = "HKD";

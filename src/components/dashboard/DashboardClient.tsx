@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
 import {
   addCategory,
   attachReceipt,
@@ -18,12 +19,15 @@ import { createClient } from "@/lib/supabase/client";
 import { compressImageToJpeg } from "@/lib/image-compress";
 import {
   CATEGORY_MAX_PER_LEDGER,
-  CURRENCIES,
+  currenciesOrderedForMarket,
+  defaultCurrencyForMarket,
   LEDGER_MAX,
   RECEIPT_MAX_BYTES,
   RECEIPT_ZIP_MAX_BYTES_UNCOMPRESSED,
   RECEIPT_ZIP_MAX_FILES,
+  type CurrencyCode,
 } from "@/lib/constants";
+import { categoriesForMarketSelect } from "@/lib/categories-ui";
 import { currentTaxYearStart } from "@/lib/reports";
 import { useAppSnap } from "@/components/app/AppSnapContext";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
@@ -93,6 +97,8 @@ export function DashboardClient({
   quickAddIncomePrefill: QuickAddIncomePrefill;
 }) {
   const { locale, t } = useI18n();
+  const market = useMarket();
+  const currencyOptions = currenciesOrderedForMarket(market);
   const { receiptQueue, dequeueReceipt } = useAppSnap();
   const receiptQueueBacklog = receiptQueue.length;
   const colon = locale === "zh" ? "：" : ": ";
@@ -101,9 +107,16 @@ export function DashboardClient({
   const [err, setErr] = useState<string | null>(null);
 
   const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("HKD");
+  const [currency, setCurrency] = useState<CurrencyCode>(() =>
+    defaultCurrencyForMarket(market)
+  );
   const [type, setType] = useState<"income" | "expense">("expense");
   const [categoryId, setCategoryId] = useState<string>("");
+  const quickAddCategories = useMemo(
+    () =>
+      categoriesForMarketSelect(categories, market, categoryId || undefined),
+    [categories, market, categoryId]
+  );
   const [note, setNote] = useState("");
   const [txDate, setTxDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [file, setFile] = useState<File | null>(null);
@@ -938,9 +951,11 @@ export function DashboardClient({
             <select
               className="rounded-lg border border-border px-3 py-2 text-sm"
               value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
+              onChange={(e) =>
+                setCurrency(e.target.value as CurrencyCode)
+              }
             >
-              {CURRENCIES.map((c) => (
+              {currencyOptions.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>
@@ -967,7 +982,7 @@ export function DashboardClient({
             onChange={(e) => setCategoryId(e.target.value)}
           >
             <option value="">{t("dashboard.categoryOpt")}</option>
-            {categories.map((c) => (
+            {quickAddCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {categoryLabel(t, c)}
               </option>
@@ -1165,7 +1180,11 @@ export function DashboardClient({
                         aria-label={t("dashboard.txCategoryAria")}
                       >
                         <option value="">{t("dashboard.txCategoryUnset")}</option>
-                        {categories.map((c) => (
+                        {categoriesForMarketSelect(
+                          categories,
+                          market,
+                          tx.category_id
+                        ).map((c) => (
                           <option key={c.id} value={c.id}>
                             {categoryLabel(t, c)}
                           </option>

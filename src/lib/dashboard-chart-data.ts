@@ -36,12 +36,14 @@ export const UNCATEGORIZED_ID = "__uncategorized__";
 
 export function pickChartCurrency(
   sums: { currency: string }[],
-  txs: TxForChart[]
+  txs: TxForChart[],
+  homeCurrency = "HKD"
 ): string {
   const fromTxs = new Set(txs.map((t) => t.currency));
+  if (fromTxs.has(homeCurrency)) return homeCurrency;
   if (fromTxs.has("HKD")) return "HKD";
   if (sums.length) return sums[0].currency;
-  return txs[0]?.currency ?? "HKD";
+  return txs[0]?.currency ?? homeCurrency;
 }
 
 /** Last 6 calendar months including current; `ym` = YYYY-MM */

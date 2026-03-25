@@ -12,6 +12,7 @@ import {
 import type { CurrencyCode } from "@/lib/constants";
 import { sanitizeFxPatch } from "@/lib/fx-rates";
 import type { Locale } from "@/lib/i18n/messages";
+import { getMarketFromEnv } from "@/lib/market";
 
 async function requireUserAndProfile(): Promise<{
   userId: string;
@@ -79,7 +80,11 @@ export async function createLedger(
 
   if (le || !ledger) throw new Error(le?.message ?? "建立失敗");
 
-  const seed = categorySeedRowsForNewLedger(template, uiLocale);
+  const seed = categorySeedRowsForNewLedger(
+    template,
+    uiLocale,
+    getMarketFromEnv()
+  );
 
   const cats = seed.map((c, i) => ({
     user_id: user.id,

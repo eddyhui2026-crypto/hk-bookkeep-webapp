@@ -1,18 +1,27 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { InvoiceFormClient } from "@/components/invoice/InvoiceFormClient";
-import { normalizeInvoiceCurrency } from "@/lib/constants";
+import {
+  defaultCurrencyForMarket,
+  normalizeInvoiceCurrency,
+} from "@/lib/constants";
+import { getMarket } from "@/lib/market-server";
+import type { Market } from "@/lib/market";
 import type { InvoiceNewFormDefaults } from "@/lib/invoice-types";
 
 export const dynamic = "force-dynamic";
 
 function mapNewInvoiceDefaults(
-  row: Record<string, string | null | undefined> | null
+  row: Record<string, string | null | undefined> | null,
+  market: Market
 ): InvoiceNewFormDefaults {
   const pm = row?.default_payment_method;
   const payment_method =
     pm === "fps" || pm === "bank_transfer" || pm === "paypal" ? pm : "fps";
-  const currency = normalizeInvoiceCurrency(row?.default_currency);
+  const currency = normalizeInvoiceCurrency(
+    row?.default_currency,
+    defaultCurrencyForMarket(market)
+  );
 
   return {
     company_name: row?.default_company_name?.trim() ?? "",
@@ -28,6 +37,7 @@ function mapNewInvoiceDefaults(
 
 export default async function InvoicePage() {
   const supabase = await createClient();
+  const market = await getMarket();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -43,7 +53,7 @@ export default async function InvoicePage() {
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const defaults = mapNewInvoiceDefaults(prefs ?? null);
+  const defaults = mapNewInvoiceDefaults(prefs ?? null, market);
 
   return <InvoiceFormClient defaultDate={defaultDate} defaults={defaults} />;
 }

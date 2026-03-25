@@ -1,6 +1,11 @@
 /** 由 /app?prefillIncome=1&… 帶入「快速記一筆」收入欄 */
 
-import { normalizeInvoiceCurrency, type CurrencyCode } from "@/lib/constants";
+import {
+  defaultCurrencyForMarket,
+  normalizeInvoiceCurrency,
+  type CurrencyCode,
+} from "@/lib/constants";
+import { getMarketFromEnv } from "@/lib/market";
 
 export type QuickAddIncomePrefill = {
   amount: string;
@@ -20,7 +25,10 @@ export function parseQuickAddIncomePrefill(
   if (flag !== "1" && flag !== "true") return null;
 
   const amount = (first(sp.prefillAmount) ?? "").trim();
-  const currency = normalizeInvoiceCurrency(first(sp.prefillCurrency));
+  const currency = normalizeInvoiceCurrency(
+    first(sp.prefillCurrency),
+    defaultCurrencyForMarket(getMarketFromEnv())
+  );
   const note = first(sp.prefillNote) ?? "";
   const d = (first(sp.prefillDate) ?? "").trim();
   const txDate = /^\d{4}-\d{2}-\d{2}$/.test(d)

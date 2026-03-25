@@ -5,7 +5,13 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { CURRENCIES, normalizeInvoiceCurrency, type CurrencyCode } from "@/lib/constants";
+import {
+  CURRENCIES,
+  defaultCurrencyForMarket,
+  normalizeInvoiceCurrency,
+  type CurrencyCode,
+} from "@/lib/constants";
+import { getMarketFromEnv } from "@/lib/market";
 
 const zInvoiceCurrency = z.enum(
   CURRENCIES as unknown as [CurrencyCode, ...CurrencyCode[]]
@@ -36,7 +42,14 @@ const schema = z.object({
       return Number.isFinite(n) ? n : NaN;
     })
     .pipe(z.number().finite().min(0)),
-  currency: z.preprocess((v) => normalizeInvoiceCurrency(v), zInvoiceCurrency),
+  currency: z.preprocess(
+    (v) =>
+      normalizeInvoiceCurrency(
+        v,
+        defaultCurrencyForMarket(getMarketFromEnv())
+      ),
+    zInvoiceCurrency
+  ),
   payment_method: z.preprocess((v) => {
     const s = String(v);
     if (s === "bank_transfer" || s === "paypal" || s === "fps") return s;
