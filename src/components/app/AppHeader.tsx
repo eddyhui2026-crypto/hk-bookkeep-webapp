@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { SITE_NAME } from "@/lib/env";
 import { signOut } from "@/app/auth/actions";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
+import { getSiteName } from "@/lib/market";
 
 export function AppHeader({ email }: { email?: string | null }) {
+  const market = useMarket();
+  const siteName = getSiteName(market);
   const { locale, setLocale, t } = useI18n();
 
   return (
@@ -18,19 +21,21 @@ export function AppHeader({ email }: { email?: string | null }) {
           href="/app"
           className="text-lg font-semibold text-foreground sm:text-base"
         >
-          {SITE_NAME}
+          {siteName}
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-2 text-base sm:gap-3 sm:text-sm">
           {email && (
             <span className="hidden text-muted sm:inline">{email}</span>
           )}
-          <button
-            type="button"
-            onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-            className="rounded-full border border-border px-3 py-1 text-foreground hover:bg-brand/10"
-          >
-            {t("localeSwitch")}
-          </button>
+          {market !== "tw" ? (
+            <button
+              type="button"
+              onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+              className="rounded-full border border-border px-3 py-1 text-foreground hover:bg-brand/10"
+            >
+              {t("localeSwitch")}
+            </button>
+          ) : null}
           <Link href="/" className="text-muted hover:text-foreground">
             {t("app.home")}
           </Link>
