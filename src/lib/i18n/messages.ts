@@ -102,13 +102,16 @@ export const hkMessages = {
       audienceNot5: "要會計師協作",
       audienceNot6: "中型公司",
     },
+    authCallback: {
+      working: "完成登入…",
+    },
     login: {
       title: "登入 {site}",
       back: "← 返回主頁",
       subtitle: "可用 Google，或以電郵註冊／登入；重設密碼經電郵連結。",
       err: "登入失敗，請重試。",
       errAuth:
-        "Google 登入未完成（逾時或已被瀏覽器擋下）。請用 Safari／Chrome 主程式直接開本站再試一次；若你係用主畫面 App 圖示，可先喺瀏覽器登入成功，再返轉圖示用。請勿用通訊軟件內置瀏覽器登入。",
+        "Google 登入未完成。請用 Chrome（或 Safari）主程式直接開本站；勿用通訊軟件內置瀏覽器。Android 可試清除本站「網站資料」後再試；主畫面捷徑可先喺瀏覽器登入一次。",
       google: "用 Google 繼續",
       or: "或",
       emailPh: "電郵",
@@ -637,13 +640,16 @@ export const hkMessages = {
       audienceNot5: "Those who need accountant collaboration",
       audienceNot6: "Mid-sized companies",
     },
+    authCallback: {
+      working: "Finishing sign-in…",
+    },
     login: {
       title: "Sign in to {site}",
       back: "← Back to home",
       subtitle: "Use Google or email sign-up / sign-in. Password resets are sent by email.",
       err: "Sign-in failed. Please try again.",
       errAuth:
-        "Google sign-in did not finish (timeout or blocked). Open this site in Safari or Chrome (not an in-app browser). If you use a home-screen icon, sign in once in the full browser first, then use the shortcut.",
+        "Google sign-in did not finish. Open this site in Chrome or Safari (not an in-app browser). On Android, try “Clear browsing data” for this site, or sign in once in the full browser before using a home-screen shortcut.",
       google: "Continue with Google",
       or: "or",
       emailPh: "Email",
