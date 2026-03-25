@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseCookieOptionsForHost } from "@/lib/supabase/cookie-options";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -10,7 +11,14 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  const host =
+    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+    request.headers.get("host") ||
+    "";
+  const cookieOptions = supabaseCookieOptionsForHost(host);
+
   const supabase = createServerClient(url, anon, {
+    cookieOptions,
     cookies: {
       getAll() {
         return request.cookies.getAll();
