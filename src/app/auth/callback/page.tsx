@@ -64,17 +64,29 @@ function AuthCallbackInner() {
         }
 
         const supabase = createClient();
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        await supabase.auth.exchangeCodeForSession(code);
         if (cancelled) return;
 
         clearOauthReturnClient();
 
-        if (error) {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            window.location.replace(`${origin}${next}`);
-            return;
-          }
+        const { data: sessionData } = await supabase.auth.getSession();
+        const access = sessionData.session?.access_token;
+        const refresh = sessionData.session?.refresh_token;
+        if (!access || !refresh) {
+          router.replace(`${origin}/login?error=auth`);
+          return;
+        }
+
+        const sync = await fetch(`${origin}/api/auth/session`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            access_token: access,
+            refresh_token: refresh,
+          }),
+        });
+        if (!sync.ok) {
           router.replace(`${origin}/login?error=auth`);
           return;
         }

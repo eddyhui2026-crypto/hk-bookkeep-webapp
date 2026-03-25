@@ -14,7 +14,8 @@ export function supabaseCookieOptionsForHost(
     return {
       domain: ".harbix.app",
       path: "/",
-      sameSite: "lax",
+      /** Google OAuth 返嚟屬 cross-site top-level navigation；Android Chrome 喺 Lax 下間中甩 session */
+      sameSite: "none",
       secure: true,
     };
   }
