@@ -41,6 +41,12 @@ export function AppHeader({ email }: { email?: string | null }) {
             {t("app.accountNav")}
           </Link>
           <Link
+            href="/app/feedback"
+            className="text-muted hover:text-foreground"
+          >
+            {t("app.feedbackNav")}
+          </Link>
+          <Link
             href="/app/invoices"
             className="text-muted hover:text-foreground"
           >
