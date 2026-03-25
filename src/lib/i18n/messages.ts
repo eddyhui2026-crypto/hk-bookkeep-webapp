@@ -139,7 +139,7 @@ export const messages = {
       msgPh: "訊息 *",
       submit: "送出",
       ok: "已送出，多謝你。",
-      err: "暫時無法送出，請稍後再試或電郵 hkbookkeep@harbix.app。",
+      err: "暫時無法送出，請稍後再試或電郵 bookkeep@harbix.app。",
     },
     toolsIndex: {
       title: "免費工具",
@@ -250,8 +250,8 @@ export const messages = {
       errPhrase: "確認字句不正確。",
       errAuth: "你已登出或工作階段失效，請重新登入後再試。",
       errConfig: "伺服器未正確設定，暫時無法完成刪除。",
-      errStorage: "無法清除收據檔案，請稍後再試或聯絡 hkbookkeep@harbix.app。",
-      errDeleteUser: "無法刪除帳戶，請聯絡 hkbookkeep@harbix.app。",
+      errStorage: "無法清除收據檔案，請稍後再試或聯絡 bookkeep@harbix.app。",
+      errDeleteUser: "無法刪除帳戶，請聯絡 bookkeep@harbix.app。",
     },
     invoice: {
       backList: "← 發票列表",
@@ -673,7 +673,7 @@ export const messages = {
       msgPh: "Message *",
       submit: "Send",
       ok: "Sent. Thank you.",
-      err: "Could not send. Please try again later or email hkbookkeep@harbix.app.",
+      err: "Could not send. Please try again later or email bookkeep@harbix.app.",
     },
     toolsIndex: {
       title: "Free tools",
@@ -783,8 +783,8 @@ export const messages = {
       errPhrase: "That phrase does not match.",
       errAuth: "You are signed out or your session expired. Sign in and try again.",
       errConfig: "The server is not configured to complete deletion.",
-      errStorage: "Could not remove receipt files. Try again or email hkbookkeep@harbix.app.",
-      errDeleteUser: "Could not delete the account. Email hkbookkeep@harbix.app.",
+      errStorage: "Could not remove receipt files. Try again or email bookkeep@harbix.app.",
+      errDeleteUser: "Could not delete the account. Email bookkeep@harbix.app.",
     },
     invoice: {
       backList: "← Invoices",

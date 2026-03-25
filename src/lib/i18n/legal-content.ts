@@ -18,7 +18,7 @@ const termsZh: LegalDocument = {
     {
       title: "1. 營運者與聯絡方式",
       paragraphs: [
-        "本服務「HKBookkeep」（網址 https://hkbookkeep.harbix.app）由 Heartbeat 營運。聯絡方式：電郵 hkbookkeep@harbix.app。",
+        "本服務「HKBookkeep」（網址 https://hkbookkeep.harbix.app）由 Heartbeat 營運。聯絡方式：電郵 bookkeep@harbix.app。",
       ],
     },
     {
@@ -53,7 +53,7 @@ const termsZh: LegalDocument = {
       title: "6. 取消訂閱與退款",
       paragraphs: [
         "取消訂閱：請使用 Stripe Customer Portal 操作。一般情況下，已開始之計費週期不會因中途取消而按比例退款；你可在該週期內按條款繼續使用服務直至該週期結束（實際以 Stripe 設定及帳戶狀態為準）。",
-        "退款：除適用法例另有強制規定外，已收取之訂閱費用一般不設中期退款。如你懷疑重複扣款、錯誤扣款或未授權交易，請先透過 Customer Portal 查閱紀錄，或聯絡 hkbookkeep@harbix.app，我哋會協助與 Stripe 紀錄核對。",
+        "退款：除適用法例另有強制規定外，已收取之訂閱費用一般不設中期退款。如你懷疑重複扣款、錯誤扣款或未授權交易，請先透過 Customer Portal 查閱紀錄，或聯絡 bookkeep@harbix.app，我哋會協助與 Stripe 紀錄核對。",
       ],
     },
     {
@@ -97,7 +97,7 @@ const termsEn: LegalDocument = {
     {
       title: "1. Operator and contact",
       paragraphs: [
-        'The service "HKBookkeep" (https://hkbookkeep.harbix.app) is operated by Heartbeat. Contact: hkbookkeep@harbix.app.',
+        'The service "HKBookkeep" (https://hkbookkeep.harbix.app) is operated by Heartbeat. Contact: bookkeep@harbix.app.',
       ],
     },
     {
@@ -132,7 +132,7 @@ const termsEn: LegalDocument = {
       title: "6. Cancellation and refunds",
       paragraphs: [
         "To cancel, use the Stripe Customer Portal. Generally, a billing period that has already started is not refunded pro rata if you cancel mid-cycle; you may continue using the service for that period as applicable (subject to Stripe settings and your account).",
-        "Except where mandatory law requires otherwise, subscription fees already paid are generally not refunded mid-term. If you suspect duplicate charges, errors, or unauthorised transactions, check the Portal first or email hkbookkeep@harbix.app and we will help reconcile with Stripe records.",
+        "Except where mandatory law requires otherwise, subscription fees already paid are generally not refunded mid-term. If you suspect duplicate charges, errors, or unauthorised transactions, check the Portal first or email bookkeep@harbix.app and we will help reconcile with Stripe records.",
       ],
     },
     {
@@ -176,7 +176,7 @@ const privacyZh: LegalDocument = {
     {
       title: "1. 資料控制者",
       paragraphs: [
-        "負責處理你個人資料嘅一方為 Heartbeat。聯絡：hkbookkeep@harbix.app。",
+        "負責處理你個人資料嘅一方為 Heartbeat。聯絡：bookkeep@harbix.app。",
       ],
     },
     {
@@ -192,7 +192,7 @@ const privacyZh: LegalDocument = {
     {
       title: "3. 點解要收集（用途）",
       paragraphs: [
-        "提供、維持及改善記帳功能；處理訂閱及試用；發送服務相關電郵（例如電郵驗證／重設密碼、試用／訂閱提醒、試用結束後第 30 日之資料提醒）；防欺詐、保安及法例要求；回覆你透過表單提出嘅查詢（經 Unosend 以 hkbookkeep@harbix.app 發送或接收相關通知）。",
+        "提供、維持及改善記帳功能；處理訂閱及試用；發送服務相關電郵（例如電郵驗證／重設密碼、試用／訂閱提醒、試用結束後第 30 日之資料提醒）；防欺詐、保安及法例要求；回覆你透過表單提出嘅查詢（經第三方電郵服務以 bookkeep@harbix.app 發送或接收相關通知）。",
       ],
     },
     {
@@ -204,7 +204,7 @@ const privacyZh: LegalDocument = {
     {
       title: "5. 第三方服務提供者（副處理者）",
       paragraphs: [
-        "我哋使用（或可能使用）以下類別服務，佢哋或會喺境外處理資料：Stripe（付款）、Supabase（資料庫、認證、檔案儲存）、Unosend（電郵）、Vercel（網站託管）等。佢哋有其獨立私隱政策。",
+        "我哋使用（或可能使用）以下類別服務，佢哋或會喺境外處理資料：Stripe（付款）、Supabase（資料庫、認證、檔案儲存）、第三方收發電郵（例如 Resend）、Vercel（網站託管）等。佢哋有其獨立私隱政策。",
       ],
     },
     {
@@ -228,7 +228,7 @@ const privacyZh: LegalDocument = {
     {
       title: "8. 你的權利",
       paragraphs: [
-        "你可聯絡 hkbookkeep@harbix.app 要求查閱、更正、或（在法例允許下）刪除個人資料。",
+        "你可聯絡 bookkeep@harbix.app 要求查閱、更正、或（在法例允許下）刪除個人資料。",
         "登入後前往「帳號」頁面可刪除帳戶：系統會刪除你嘅登入帳戶、業務資料（生意簿／交易／分類）、以及已上載收據檔案，並會盡力取消 Stripe 訂閱及刪除本應用程式所關聯之 Stripe 客戶資料；付款機構可能按其政策保留部份帳務紀錄。",
       ],
     },
@@ -260,7 +260,7 @@ const privacyEn: LegalDocument = {
     {
       title: "1. Data controller",
       paragraphs: [
-        "The data controller is Heartbeat. Contact: hkbookkeep@harbix.app.",
+        "The data controller is Heartbeat. Contact: bookkeep@harbix.app.",
       ],
     },
     {
@@ -276,7 +276,7 @@ const privacyEn: LegalDocument = {
     {
       title: "3. Why we collect it",
       paragraphs: [
-        "To provide, maintain, and improve bookkeeping features; to handle subscriptions and trials; to send service emails (e.g. email verification / password reset, trial/subscription reminders, day-30 reminder after trial end); for fraud prevention, security, and legal compliance; to respond to enquiries from forms (via Unosend, using hkbookkeep@harbix.app for related notifications).",
+        "To provide, maintain, and improve bookkeeping features; to handle subscriptions and trials; to send service emails (e.g. email verification / password reset, trial/subscription reminders, day-30 reminder after trial end); for fraud prevention, security, and legal compliance; to respond to enquiries from forms (via a transactional email provider, using bookkeep@harbix.app for related notifications).",
       ],
     },
     {
@@ -288,7 +288,7 @@ const privacyEn: LegalDocument = {
     {
       title: "5. Third-party processors",
       paragraphs: [
-        "We use (or may use) services that may process data outside Hong Kong, including Stripe (payments), Supabase (database, auth, file storage), Unosend (email), Vercel (hosting), and others. Each has its own privacy policy.",
+        "We use (or may use) services that may process data outside Hong Kong, including Stripe (payments), Supabase (database, auth, file storage), a transactional email provider (e.g. Resend), Vercel (hosting), and others. Each has its own privacy policy.",
       ],
     },
     {
@@ -312,7 +312,7 @@ const privacyEn: LegalDocument = {
     {
       title: "8. Your rights",
       paragraphs: [
-        "You may contact hkbookkeep@harbix.app to request access, correction, or (where law allows) deletion.",
+        "You may contact bookkeep@harbix.app to request access, correction, or (where law allows) deletion.",
         "After sign-in, open the Account page to delete your account: we remove your login, business data (ledgers, transactions, categories), and uploaded receipts, and we cancel Stripe subscriptions and delete the Stripe customer record linked to this app where possible; Stripe may retain some billing records under its own policies.",
       ],
     },

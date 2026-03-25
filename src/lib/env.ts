@@ -49,4 +49,4 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://hkbookkeep.harbix.app";
 
 /** 公開營運／聯絡電郵（預設發件／收件可與此對齊，並於 Resend／Unosend 驗證網域） */
-export const PUBLIC_SUPPORT_EMAIL = "hkbookkeep@harbix.app";
+export const PUBLIC_SUPPORT_EMAIL = "bookkeep@harbix.app";
