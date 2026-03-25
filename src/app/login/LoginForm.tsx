@@ -8,6 +8,11 @@ import { useI18n } from "@/components/I18nProvider";
 import { SITE_URL } from "@/lib/env";
 import { useMarket } from "@/components/MarketProvider";
 import { getSiteName } from "@/lib/market";
+import {
+  isAllowedOauthReturnOrigin,
+  OAUTH_RETURN_MAX_AGE_SEC,
+  OAUTH_RETURN_ORIGIN_COOKIE,
+} from "@/lib/oauth-return-origin";
 
 export function LoginForm() {
   const market = useMarket();
@@ -34,6 +39,12 @@ export function LoginForm() {
     setLoading(true);
     setErrMsg(null);
     setInfoMsg(null);
+    if (
+      typeof window !== "undefined" &&
+      isAllowedOauthReturnOrigin(window.location.origin)
+    ) {
+      document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=${encodeURIComponent(window.location.origin)}; Path=/; Domain=.harbix.app; Max-Age=${OAUTH_RETURN_MAX_AGE_SEC}; Secure; SameSite=Lax`;
+    }
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
