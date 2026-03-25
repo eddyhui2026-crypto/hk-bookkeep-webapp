@@ -43,13 +43,14 @@ export function LoginForm() {
       typeof window !== "undefined" &&
       isAllowedOauthReturnOrigin(window.location.origin)
     ) {
-      document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=${encodeURIComponent(window.location.origin)}; Path=/; Domain=.harbix.app; Max-Age=${OAUTH_RETURN_MAX_AGE_SEC}; Secure; SameSite=Lax`;
+      document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=${encodeURIComponent(window.location.origin)}; Path=/; Domain=.harbix.app; Max-Age=${OAUTH_RETURN_MAX_AGE_SEC}; Secure; SameSite=None`;
     }
+    const returnOriginParam = encodeURIComponent(origin);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}&return_origin=${returnOriginParam}`,
       },
     });
     setLoading(false);

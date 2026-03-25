@@ -30,3 +30,16 @@ export function pickRedirectOriginAfterOAuth(
   }
   return stripTrailingSlash(requestOrigin);
 }
+
+/** OAuth callback：query `return_origin`（Supabase 換 host 時多數會保留）優先於 cookie。 */
+export function pickRedirectOriginAfterOAuthFromSources(
+  returnOriginQuery: string | null | undefined,
+  preferredFromCookie: string | null | undefined,
+  requestOrigin: string
+): string {
+  if (returnOriginQuery) {
+    const q = returnOriginQuery.trim();
+    if (isAllowedOauthReturnOrigin(q)) return stripTrailingSlash(q);
+  }
+  return pickRedirectOriginAfterOAuth(preferredFromCookie, requestOrigin);
+}

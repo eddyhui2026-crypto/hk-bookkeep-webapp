@@ -6,13 +6,13 @@ import { useI18n } from "@/components/I18nProvider";
 import { createClient } from "@/lib/supabase/client";
 import {
   OAUTH_RETURN_ORIGIN_COOKIE,
-  pickRedirectOriginAfterOAuth,
+  pickRedirectOriginAfterOAuthFromSources,
   stripTrailingSlash,
 } from "@/lib/oauth-return-origin";
 
 function readCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
-  const parts = document.cookie.split("; ");
+  const parts = document.cookie.split(/\s*;\s*/);
   for (const p of parts) {
     if (p.startsWith(`${name}=`)) {
       return decodeURIComponent(p.slice(name.length + 1));
@@ -25,9 +25,9 @@ function clearOauthReturnClient(): void {
   if (typeof document === "undefined") return;
   const h = window.location.hostname.toLowerCase();
   if (h === "harbix.app" || h.endsWith(".harbix.app")) {
-    document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=; Path=/; Domain=.harbix.app; Max-Age=0; Secure; SameSite=Lax`;
+    document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=; Path=/; Domain=.harbix.app; Max-Age=0; Secure; SameSite=None`;
   }
-  document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=; Path=/; Max-Age=0; Secure; SameSite=Lax`;
+  document.cookie = `${OAUTH_RETURN_ORIGIN_COOKIE}=; Path=/; Max-Age=0; Secure; SameSite=None`;
 }
 
 function AuthCallbackFallback() {
@@ -53,9 +53,12 @@ function AuthCallbackInner() {
         let next = sp.get("next") ?? "/app";
         if (!next.startsWith("/") || next.startsWith("//")) next = "/app";
 
-        const preferred = readCookie(OAUTH_RETURN_ORIGIN_COOKIE);
         const requestOrigin = stripTrailingSlash(window.location.origin);
-        const origin = pickRedirectOriginAfterOAuth(preferred, requestOrigin);
+        const origin = pickRedirectOriginAfterOAuthFromSources(
+          sp.get("return_origin"),
+          readCookie(OAUTH_RETURN_ORIGIN_COOKIE),
+          requestOrigin
+        );
 
         if (!code) {
           clearOauthReturnClient();
