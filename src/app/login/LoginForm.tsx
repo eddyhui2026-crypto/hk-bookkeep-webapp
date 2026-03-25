@@ -138,7 +138,7 @@ export function LoginForm() {
 
         {err && (
           <p className="mt-4 rounded-lg bg-expense/10 px-3 py-2 text-sm text-expense">
-            {t("login.err")}
+            {err === "auth" ? t("login.errAuth") : t("login.err")}
           </p>
         )}
 
