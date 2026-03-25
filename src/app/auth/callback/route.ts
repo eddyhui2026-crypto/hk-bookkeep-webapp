@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { createRouteHandlerClient } from "@/lib/supabase/server";
 import {
   OAUTH_RETURN_ORIGIN_COOKIE,
   pickRedirectOriginAfterOAuth,
@@ -17,28 +16,33 @@ function clearOauthReturnCookie(res: NextResponse): void {
   });
 }
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(request: NextRequest) {
   const requestOrigin = getBrowserFacingOriginFromRequest(request);
-  const jar = await cookies();
-  const preferred = jar.get(OAUTH_RETURN_ORIGIN_COOKIE)?.value ?? null;
+  const preferred =
+    request.cookies.get(OAUTH_RETURN_ORIGIN_COOKIE)?.value ?? null;
   const origin = pickRedirectOriginAfterOAuth(preferred, requestOrigin);
 
-  const code = searchParams.get("code");
-  let next = searchParams.get("next") ?? "/app";
+  const code = request.nextUrl.searchParams.get("code");
+  let next = request.nextUrl.searchParams.get("next") ?? "/app";
   if (!next.startsWith("/") || next.startsWith("//")) next = "/app";
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const res = NextResponse.redirect(`${origin}${next}`);
-      clearOauthReturnCookie(res);
-      return res;
-    }
+  const redirectOk = `${origin}${next}`;
+  const redirectErr = `${origin}/login?error=auth`;
+
+  if (!code) {
+    const res = NextResponse.redirect(redirectErr);
+    clearOauthReturnCookie(res);
+    return res;
   }
 
-  const res = NextResponse.redirect(`${origin}/login?error=auth`);
-  clearOauthReturnCookie(res);
-  return res;
+  let response = NextResponse.redirect(redirectOk);
+  const supabase = createRouteHandlerClient(request, response);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    response = NextResponse.redirect(redirectErr);
+  }
+
+  clearOauthReturnCookie(response);
+  return response;
 }
