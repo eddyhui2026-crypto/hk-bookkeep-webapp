@@ -1,11 +1,23 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
+import { getMarketingMetadata } from "@/lib/market-metadata";
+import { getMarketFromEnv, getSiteName, marketFromHost } from "@/lib/market";
 
-export default function manifest(): MetadataRoute.Manifest {
+/** 按安裝來源域名（hk／sg／tw）決定 PWA 顯示名稱 */
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
+  const market = marketFromHost(host) ?? getMarketFromEnv();
+  const meta = getMarketingMetadata(market);
+  const title =
+    typeof meta.title === "string" ? meta.title : getSiteName(market);
+  const description =
+    typeof meta.description === "string" ? meta.description : "";
+
   return {
-    name: "HKBookkeep — 香港記帳",
-    short_name: "HKBookkeep",
-    description:
-      "多生意簿、輕量記帳，專為香港 freelancer 同網店小賣家。",
+    name: title,
+    short_name: getSiteName(market),
+    description,
     start_url: "/app",
     display: "standalone",
     background_color: "#faf5ff",
