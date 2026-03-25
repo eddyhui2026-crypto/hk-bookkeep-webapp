@@ -7,12 +7,12 @@ export const messages = {
     localeSwitch: "English",
     nav: { articles: "文章", tools: "工具", contact: "聯絡", login: "登入" },
     footer: {
-      rights: "© {year} Harbix · 非專業稅務或法律意見",
+      rights: "© {year} Heartbeat · HKBookkeep · 非專業稅務或法律意見",
       terms: "服務條款",
       privacy: "私隱政策",
     },
     home: {
-      tag: "Harbix 香港記帳",
+      tag: "HKBookkeep · 香港記帳",
       titleLine1: "香港 freelancer／網店",
       titleLine2: "輕量記帳",
       lead:
@@ -34,7 +34,7 @@ export const messages = {
       li3: "支援 HKD、CNY、USD 等常用幣種",
       li4: "簡易 Invoice：開單、列印／PDF、預設欄位；可一掣轉記帳收入",
       li5: "首頁即試免費工具，無須登入",
-      addToHomeTitle: "將 Harbix 加到電話主畫面，一撳當 App 咁開",
+      addToHomeTitle: "將 HKBookkeep 加到電話主畫面，一撳當 App 咁開",
       addToHomeBannerAlt:
         "插圖：兩部電話分別示意 Safari 分享掣同 Chrome 選單，方便加到主畫面",
       addToHomeIntro:
@@ -60,7 +60,7 @@ export const messages = {
       addToHomeIosFig3: "圖示：列表其中一列係加入主畫面",
       addToHomeIosStep4Title: "主畫面會有新圖示",
       addToHomeIosStep4Body:
-        "返去主畫面，你會見到網站圖示嘅捷徑；一撳就開 Harbix，唔使每次再搵連結。",
+        "返去主畫面，你會見到網站圖示嘅捷徑；一撳就開 HKBookkeep，唔使每次再搵連結。",
       addToHomeIosFig4: "圖示：主畫面多咗捷徑圖示",
       addToHomeAndroidBadge: "Android（建議 Chrome）",
       addToHomeAndroidStep1Title: "用 Chrome 開本網站",
@@ -84,7 +84,7 @@ export const messages = {
       allTools: "全部工具",
       ctaLogin: "登入／開始",
       ctaTools: "免費工具",
-      audienceFitTitle: "適合使用 Harbix 香港記帳嘅人",
+      audienceFitTitle: "適合使用 HKBookkeep 嘅人",
       audienceFit1:
         "香港 Freelancer（設計、攝影、剪片、寫稿、教學等）",
       audienceFit2: "網店（IG Shop、Shopify、Carousell、Etsy 等）",
@@ -105,7 +105,7 @@ export const messages = {
     login: {
       title: "登入 {site}",
       back: "← 返回主頁",
-      subtitle: "暫時只支援以 Google 登入（試運）。",
+      subtitle: "可用 Google，或以電郵註冊／登入；重設密碼經電郵連結。",
       err: "登入失敗，請重試。",
       google: "用 Google 繼續",
       or: "或",
@@ -116,6 +116,8 @@ export const messages = {
       switchToSignUp: "未有帳戶？註冊",
       switchToSignIn: "已有帳戶？登入",
       forgot: "忘記密碼",
+      forgotSubmit: "發送重設密碼連結",
+      forgotBack: "返回電郵登入",
       needEmail: "請先輸入電郵地址。",
       checkEmail: "已發出驗證電郵，請檢查收件匣（及垃圾郵件）後再登入。",
       resetSent: "如該電郵已註冊，你會收到重設密碼連結。",
@@ -166,7 +168,7 @@ export const messages = {
       estLabel: "粗略估算稅款（HKD）",
       pctLabel: "佔利潤比約 {n}%",
       cta: "想記低所有收支？",
-      ctaLink: "試用 Harbix 香港記帳",
+      ctaLink: "試用 HKBookkeep",
     },
     toolFreelance: {
       linkTax: "利得稅粗估",
@@ -179,7 +181,7 @@ export const messages = {
       hours: "每日可計費時數",
       expenses: "每月固定開支（HKD，可選）",
       resultLabel: "估算需達時薪（HKD／小時）",
-      cta: "用 Harbix 分開多本生意簿記帳",
+      cta: "用 HKBookkeep 分開多本生意簿記帳",
     },
     toolAd: {
       linkTax: "利得稅粗估",
@@ -192,7 +194,7 @@ export const messages = {
       hintLow: "占比偏低至中等（視行業而定，僅作參考）。",
       hintMid: "占比中等偏高，宜留意 ROAS／毛利。",
       hintHigh: "占比偏高，建議檢視廣告成效與定價（非經營建議，僅資訊）。",
-      cta: "用 Harbix 分簿記平台費同廣告",
+      cta: "用 HKBookkeep 分簿記平台費同廣告",
     },
     terms: {
       back: "返回主頁",
@@ -329,6 +331,11 @@ export const messages = {
       overview: "概覽",
       exportCsv: "匯出本月 CSV",
       exportPrintPage: "列印報表（另存 PDF）",
+      taxYearForExport: "稅務／收據匯出：評稅年度（4 月–3 月）",
+      taxSummaryPrint: "稅務年度損益摘要（列印／PDF）",
+      receiptZipDownload: "下載此年度收據 ZIP",
+      receiptZipHint:
+        "單次最多 {files} 個檔、源流總大小約 {mb} MB；超出請縮短年度或聯絡分批。",
       exportHint:
         "會計入數或試算表匯入請用 CSV。需要 PDF 請開「列印報表」，再用瀏覽器列印選「另存為 PDF」。",
       monthSums: "本月（各幣種）",
@@ -373,9 +380,10 @@ export const messages = {
       receiptLoading: "載入中…",
       fabQuickSnap: "影收據入數",
       fabQuickSnapLine1: "影收據",
-      fabQuickSnapLine2: "一唧開相機，影完再入金額",
-      fabQuickSnapAria: "用相機影收據，然後填金額同分類",
-      fabQuickSnapHint: "唧一下會開相機；影完會跳去下面「快速記一筆」，再填金額、支出／收入同「加入」。",
+      fabQuickSnapLine2: "可出街連拍多張，返到再逐張入數",
+      fabQuickSnapAria: "用相機影收據，可排隊多張；返到「快速記一筆」逐張填金額",
+      fabQuickSnapHint:
+        "唧一下開相機。可連影幾張，相會先入隊；返到概覽會逐張彈出，填完一筆提交後自動開下一張。",
       receiptClose: "關閉",
       receiptOpenErr: "無法開啟收據，請稍後再試。",
       delete: "刪除",
@@ -394,6 +402,11 @@ export const messages = {
       receiptExtensions: "副檔名：.jpg、.jpeg、.png、.webp、.heic、.heif 等圖片",
       receiptNone: "未選擇檔案",
       receiptClear: "移除",
+      receiptQueuedHint:
+        "已附加收據相。請填金額、支出／收入、日期（同可選分類），再按「加入」— 收據會同一齊儲存。",
+      receiptQueueBacklog: "隊列仲有 {n} 張相等緊（提交本筆後會自動開下一張）。",
+      receiptQueueFull: "隊列已滿（最多 {max} 張）。請先入數或將瀏覽器分頁保持喺概覽。",
+      receiptCameraUnnamed: "（相機相片）",
       errReceiptBig: "收據檔案仍然太大",
       errFail: "失敗",
       errDelete: "刪除失敗",
@@ -445,14 +458,21 @@ export const messages = {
       cat_fl_travel: "交通通訊",
       cat_fl_training: "專業進修",
       cat_fl_office: "辦公耗材",
+      cat_fl_home_office: "居家辦公（水電煤寬頻比例）",
+      cat_fl_mpf: "強積金（MPF／自僱強制供款）",
       cat_fl_marketing: "市場推廣",
+      cat_fl_entertainment: "應酬／送禮（客戶／夥伴）",
+      cat_fl_tax_provision: "稅款預留（提醒／撥備）",
       cat_fl_other: "其他",
       cat_sh_platform: "平台佣金",
+      cat_sh_tx_fees: "支付手續費（Stripe／PayPal／PayMe 等）",
+      cat_sh_refunds: "退款／退貨",
       cat_sh_ads: "廣告費",
       cat_sh_ship: "包裝運費",
       cat_sh_product: "貨物成本",
       cat_sh_inventory: "倉存／進貨",
       cat_sh_packmat: "包裝物料",
+      cat_sh_samples: "樣品／損耗（推廣／KOL）",
       cat_sh_software: "軟件訂閱",
       cat_sh_other: "其他",
     },
@@ -460,7 +480,7 @@ export const messages = {
       backApp: "返回概覽",
       printBtn: "列印／另存 PDF",
       help: "快捷鍵：Ctrl+P（Mac：⌘+P）→ 目的地選「另存為 PDF」或 Microsoft Print to PDF。",
-      docTitle: "Harbix 記帳",
+      docTitle: "HKBookkeep",
       period: "期間",
       exportedAt: "匯出時間",
       hkTime: "香港時間",
@@ -478,17 +498,30 @@ export const messages = {
       net: "淨額",
       summaryTruncated: "（匯總僅基於上表列出之交易。）",
     },
+    taxSummary: {
+      title: "稅務年度損益摘要",
+      period: "評稅年度",
+      disclaimer:
+        "本頁由你在 HKBookkeep 的紀錄匯總而成，僅供整理及交會計師參考，並非稅務或法律意見，也不是稅局官方表格（例如 BIR60）。",
+      incomeByCategory: "收入（按分類）",
+      expenseByCategory: "支出（按分類）",
+      amount: "金額",
+      totalsByCurrency: "按幣種匯總",
+      detailCsvHint:
+        "逐筆交易明細請用概覽「匯出本月 CSV」或「列印報表」；曆年／月份與此處評稅年度範圍未必相同。",
+    },
   },
   en: {
     localeSwitch: "中文",
     nav: { tools: "Tools", contact: "Contact", login: "Log in" },
     footer: {
-      rights: "© {year} Harbix · Not professional tax or legal advice",
+      rights:
+        "© {year} Heartbeat · HKBookkeep · Not professional tax or legal advice",
       terms: "Terms",
       privacy: "Privacy",
     },
     home: {
-      tag: "Harbix Hong Kong Bookkeeping",
+      tag: "HKBookkeep — Hong Kong bookkeeping",
       titleLine1: "Hong Kong freelancers &",
       titleLine2: "lightweight bookkeeping",
       lead:
@@ -510,7 +543,8 @@ export const messages = {
       li3: "HKD, CNY, USD and common currencies",
       li4: "Simple invoices: create, print/PDF, defaults; book income in one tap",
       li5: "Try free tools on the homepage — no sign-in",
-      addToHomeTitle: "Add Harbix to your phone’s home screen—open it like an app",
+      addToHomeTitle:
+        "Add HKBookkeep to your phone’s home screen—open it like an app",
       addToHomeBannerAlt:
         "Illustration: two phones showing Safari share and Chrome menu for adding to home screen",
       addToHomeIntro:
@@ -536,7 +570,7 @@ export const messages = {
       addToHomeIosFig3: "Illustration: the row for Add to Home Screen",
       addToHomeIosStep4Title: "You’ll get a new icon",
       addToHomeIosStep4Body:
-        "On your home screen you’ll see a shortcut with the site icon—one tap opens Harbix without hunting for the link again.",
+        "On your home screen you’ll see a shortcut with the site icon—one tap opens HKBookkeep without hunting for the link again.",
       addToHomeIosFig4: "Illustration: new shortcut on the home screen",
       addToHomeAndroidBadge: "Android (Chrome recommended)",
       addToHomeAndroidStep1Title: "Open this site in Chrome",
@@ -561,7 +595,7 @@ export const messages = {
       allTools: "All tools",
       ctaLogin: "Log in / Start",
       ctaTools: "Free tools",
-      audienceFitTitle: "Who Harbix Hong Kong Bookkeeping is for",
+      audienceFitTitle: "Who HKBookkeep is for",
       audienceFit1:
         "Hong Kong freelancers (design, photography, video, writing, teaching, and similar)",
       audienceFit2: "Online shops (IG Shop, Shopify, Carousell, Etsy, etc.)",
@@ -583,7 +617,7 @@ export const messages = {
     login: {
       title: "Sign in to {site}",
       back: "← Back to home",
-      subtitle: "Google sign-in only for now (soft launch).",
+      subtitle: "Use Google or email sign-up / sign-in. Password resets are sent by email.",
       err: "Sign-in failed. Please try again.",
       google: "Continue with Google",
       or: "or",
@@ -594,6 +628,8 @@ export const messages = {
       switchToSignUp: "No account? Sign up",
       switchToSignIn: "Already have an account? Sign in",
       forgot: "Forgot password",
+      forgotSubmit: "Send reset link",
+      forgotBack: "Back to email sign-in",
       needEmail: "Enter your email address first.",
       checkEmail:
         "We sent a confirmation email. Check your inbox (and spam), then sign in.",
@@ -645,7 +681,7 @@ export const messages = {
       estLabel: "Rough tax (HKD)",
       pctLabel: "About {n}% of profit",
       cta: "Want to track income & expenses?",
-      ctaLink: "Try Harbix Hong Kong bookkeeping",
+      ctaLink: "Try HKBookkeep",
     },
     toolFreelance: {
       linkTax: "Tax estimate",
@@ -658,7 +694,7 @@ export const messages = {
       hours: "Billable hours per day",
       expenses: "Monthly fixed costs (HKD, optional)",
       resultLabel: "Estimated hourly rate (HKD/hr)",
-      cta: "Use Harbix with multiple ledgers",
+      cta: "Use HKBookkeep with multiple ledgers",
     },
     toolAd: {
       linkTax: "Tax estimate",
@@ -671,7 +707,7 @@ export const messages = {
       hintLow: "On the low-to-moderate side (industry-dependent, informational only).",
       hintMid: "Moderately high — watch ROAS and margins.",
       hintHigh: "Relatively high — review ad performance and pricing (informational only).",
-      cta: "Track platform fees & ads in Harbix",
+      cta: "Track platform fees & ads in HKBookkeep",
     },
     terms: {
       back: "Back to home",
@@ -809,6 +845,11 @@ export const messages = {
       overview: "Overview",
       exportCsv: "Export this month (CSV)",
       exportPrintPage: "Print report (save as PDF)",
+      taxYearForExport: "Tax / receipts export: year of assessment (Apr–Mar)",
+      taxSummaryPrint: "Tax year P&L summary (print / PDF)",
+      receiptZipDownload: "Download receipts ZIP (this tax year)",
+      receiptZipHint:
+        "Up to {files} files per download, roughly {mb} MB total uncompressed; shorten the period or split if you hit the limit.",
       exportHint:
         "For bookkeeping or spreadsheets, use CSV. For a PDF, open “Print report”, then print and choose “Save as PDF”.",
       monthSums: "This month (by currency)",
@@ -853,10 +894,10 @@ export const messages = {
       receiptLoading: "Loading…",
       fabQuickSnap: "Snap receipt",
       fabQuickSnapLine1: "Snap receipt",
-      fabQuickSnapLine2: "Tap to open the camera, then enter the amount",
-      fabQuickSnapAria: "Open the camera for a receipt, then enter amount and category",
+      fabQuickSnapLine2: "Snap several while out; enter them back at your desk",
+      fabQuickSnapAria: "Camera for receipts; queue multiple, fill in on the overview",
       fabQuickSnapHint:
-        "Opens the camera; after the photo you’ll jump to Quick entry—add amount, income/expense, then Add.",
+        "Opens the camera. Snap several receipts—they queue up. On the overview you’ll fill them one by one; after each submit the next opens automatically.",
       receiptClose: "Close",
       receiptOpenErr: "Could not open the receipt. Please try again.",
       delete: "Delete",
@@ -875,6 +916,11 @@ export const messages = {
       receiptExtensions: "Extensions: .jpg, .jpeg, .png, .webp, .heic, .heif and other images",
       receiptNone: "No file selected",
       receiptClear: "Remove",
+      receiptQueuedHint:
+        "Receipt image attached. Enter amount, type, date (and category if you like), then submit—the receipt uploads with the entry.",
+      receiptQueueBacklog: "{n} more in queue (after you submit, the next one opens automatically).",
+      receiptQueueFull: "Queue is full ({max} max). Enter a few receipts first or keep this tab on the overview.",
+      receiptCameraUnnamed: "(Camera photo)",
       errReceiptBig: "Receipt file is still too large",
       errFail: "Something went wrong",
       errDelete: "Delete failed",
@@ -926,14 +972,21 @@ export const messages = {
       cat_fl_travel: "Travel & telecom",
       cat_fl_training: "Training & CPD",
       cat_fl_office: "Office supplies",
+      cat_fl_home_office: "Home office (utilities & broadband share)",
+      cat_fl_mpf: "MPF (mandatory self-employed contributions)",
       cat_fl_marketing: "Marketing",
+      cat_fl_entertainment: "Entertainment & gifts (clients & partners)",
+      cat_fl_tax_provision: "Tax provision (reminder / set-aside)",
       cat_fl_other: "Other",
       cat_sh_platform: "Marketplace fees",
+      cat_sh_tx_fees: "Payment fees (Stripe, PayPal, PayMe, etc.)",
+      cat_sh_refunds: "Refunds & returns",
       cat_sh_ads: "Advertising",
       cat_sh_ship: "Packaging & shipping",
       cat_sh_product: "Product cost",
       cat_sh_inventory: "Inventory / stock-in",
       cat_sh_packmat: "Packaging materials",
+      cat_sh_samples: "Samples & spoilage (promo / KOL)",
       cat_sh_software: "Software subscriptions",
       cat_sh_other: "Other",
     },
@@ -941,7 +994,7 @@ export const messages = {
       backApp: "Back to overview",
       printBtn: "Print / Save as PDF",
       help: "Shortcut: Ctrl+P (Mac: ⌘+P) → Destination: “Save as PDF” or Microsoft Print to PDF.",
-      docTitle: "Harbix bookkeeping",
+      docTitle: "HKBookkeep",
       period: "Period",
       exportedAt: "Exported at",
       hkTime: "Hong Kong time",
@@ -959,6 +1012,18 @@ export const messages = {
       totalExpense: "Total expense",
       net: "Net",
       summaryTruncated: "(Totals reflect only the rows shown above.)",
+    },
+    taxSummary: {
+      title: "Tax year P&L summary",
+      period: "Year of assessment",
+      disclaimer:
+        "This page summarises your HKBookkeep records for reference and to share with your accountant. It is not tax or legal advice and is not an official IRD form (e.g. BIR60).",
+      incomeByCategory: "Income (by category)",
+      expenseByCategory: "Expenses (by category)",
+      amount: "Amount",
+      totalsByCurrency: "Totals by currency",
+      detailCsvHint:
+        "For transaction-level detail use “Export this month (CSV)” or “Print report” on the overview; calendar months may differ from this tax-year range.",
     },
   },
 } as const;

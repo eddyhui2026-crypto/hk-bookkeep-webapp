@@ -32,7 +32,7 @@ export function HomePhoneMockup({
             </span>
           </div>
           <div className="border-b border-[#e9d5ff] px-4 py-2.5">
-            <p className="text-center text-xs font-semibold text-[#312e81]">Harbix</p>
+            <p className="text-center text-xs font-semibold text-[#312e81]">HKBookkeep</p>
             <p className="text-center text-[10px] text-[#64748b]">{appSubtitle}</p>
           </div>
           <div className="space-y-3 p-3">

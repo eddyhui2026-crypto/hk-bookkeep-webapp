@@ -18,7 +18,7 @@ const termsZh: LegalDocument = {
     {
       title: "1. 營運者與聯絡方式",
       paragraphs: [
-        "本服務「Harbix 香港記帳」（網址 https://hkbookkeep.harbix.app）由 Harbix 營運。聯絡方式：電郵 hkbookkeep@harbix.app。",
+        "本服務「HKBookkeep」（網址 https://hkbookkeep.harbix.app）由 Heartbeat 營運。聯絡方式：電郵 hkbookkeep@harbix.app。",
       ],
     },
     {
@@ -72,7 +72,7 @@ const termsZh: LegalDocument = {
     {
       title: "9. 免責與責任限制",
       paragraphs: [
-        "在法律允許嘅最大範圍內，本服務按「現狀」提供；因使用或無法使用本服務所引致之損失，Harbix 嘅責任以你喺該索賠發生前 12 個月內就本服務已實際支付畀我哋之費用總額為上限（如該期間無付款則以港幣零元計）。部分司法管轄區唔允許某啲免責，以該地法例為準。",
+        "在法律允許嘅最大範圍內，本服務按「現狀」提供；因使用或無法使用本服務所引致之損失，Heartbeat 嘅責任以你喺該索賠發生前 12 個月內就本服務已實際支付畀我哋之費用總額為上限（如該期間無付款則以港幣零元計）。部分司法管轄區唔允許某啲免責，以該地法例為準。",
       ],
     },
     {
@@ -97,7 +97,7 @@ const termsEn: LegalDocument = {
     {
       title: "1. Operator and contact",
       paragraphs: [
-        'The service "Harbix Hong Kong Bookkeeping" (https://hkbookkeep.harbix.app) is operated by Harbix. Contact: hkbookkeep@harbix.app.',
+        'The service "HKBookkeep" (https://hkbookkeep.harbix.app) is operated by Heartbeat. Contact: hkbookkeep@harbix.app.',
       ],
     },
     {
@@ -176,7 +176,7 @@ const privacyZh: LegalDocument = {
     {
       title: "1. 資料控制者",
       paragraphs: [
-        "負責處理你個人資料嘅一方為 Harbix。聯絡：hkbookkeep@harbix.app。",
+        "負責處理你個人資料嘅一方為 Heartbeat。聯絡：hkbookkeep@harbix.app。",
       ],
     },
     {
@@ -260,7 +260,7 @@ const privacyEn: LegalDocument = {
     {
       title: "1. Data controller",
       paragraphs: [
-        "The data controller is Harbix. Contact: hkbookkeep@harbix.app.",
+        "The data controller is Heartbeat. Contact: hkbookkeep@harbix.app.",
       ],
     },
     {

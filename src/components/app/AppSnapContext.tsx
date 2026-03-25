@@ -8,11 +8,16 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { RECEIPT_SNAP_QUEUE_MAX } from "@/lib/constants";
 
 type AppSnapContextValue = {
-  pendingReceipt: File | null;
-  setPendingReceipt: (f: File | null) => void;
-  clearPendingReceipt: () => void;
+  /** 已影、未 attach 到表單嘅相（ FIFO） */
+  receiptQueue: File[];
+  /** @returns 是否成功入隊（超過上限會失敗） */
+  enqueueReceipt: (f: File) => boolean;
+  /** 拎隊頭一張（如有）；一般用喺「快速記一筆」自動補相 */
+  dequeueReceipt: () => File | null;
+  clearReceiptQueue: () => void;
   snapEnabled: boolean;
   defaultLedgerId: string | null;
 };
@@ -28,20 +33,47 @@ export function AppSnapProvider({
   snapEnabled: boolean;
   defaultLedgerId: string | null;
 }) {
-  const [pendingReceipt, setPendingReceipt] = useState<File | null>(null);
-  const clearPendingReceipt = useCallback(() => setPendingReceipt(null), []);
+  const [receiptQueue, setReceiptQueue] = useState<File[]>([]);
+
+  const enqueueReceipt = useCallback((f: File) => {
+    let ok = false;
+    setReceiptQueue((q) => {
+      if (q.length >= RECEIPT_SNAP_QUEUE_MAX) {
+        ok = false;
+        return q;
+      }
+      ok = true;
+      return [...q, f];
+    });
+    return ok;
+  }, []);
+
+  const dequeueReceipt = useCallback((): File | null => {
+    let out: File | null = null;
+    setReceiptQueue((q) => {
+      if (q.length === 0) return q;
+      out = q[0] ?? null;
+      return q.slice(1);
+    });
+    return out;
+  }, []);
+
+  const clearReceiptQueue = useCallback(() => setReceiptQueue([]), []);
 
   const value = useMemo(
     () => ({
-      pendingReceipt,
-      setPendingReceipt,
-      clearPendingReceipt,
+      receiptQueue,
+      enqueueReceipt,
+      dequeueReceipt,
+      clearReceiptQueue,
       snapEnabled,
       defaultLedgerId,
     }),
     [
-      pendingReceipt,
-      clearPendingReceipt,
+      receiptQueue,
+      enqueueReceipt,
+      dequeueReceipt,
+      clearReceiptQueue,
       snapEnabled,
       defaultLedgerId,
     ]

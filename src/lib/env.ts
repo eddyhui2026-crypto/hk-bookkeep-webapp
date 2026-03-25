@@ -40,7 +40,8 @@ export function getServerEnv() {
   });
 }
 
-export const SITE_NAME = "Harbix 香港記帳";
+/** 介面／PWA 顯示名（法律主體見條款內文） */
+export const SITE_NAME = "HKBookkeep";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://hkbookkeep.harbix.app";
 

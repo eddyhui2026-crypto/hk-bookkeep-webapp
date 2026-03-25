@@ -18,14 +18,18 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://hkbookkeep.harbix.app"
   ),
   title: {
-    default: "Harbix 香港記帳",
-    template: "%s | Harbix 香港記帳",
+    default: "HKBookkeep — 香港記帳",
+    template: "%s | HKBookkeep",
   },
   description:
     "多生意簿、輕量記帳，專為香港 freelancer 同網店小賣家。HK$38／月、年付 HK$380。",
+  icons: {
+    icon: [{ url: "/icon", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   appleWebApp: {
     capable: true,
-    title: "Harbix 記帳",
+    title: "HKBookkeep",
     statusBarStyle: "default",
   },
 };

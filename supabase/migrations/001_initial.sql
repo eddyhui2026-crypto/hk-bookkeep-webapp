@@ -1,4 +1,4 @@
--- Harbix HK Bookkeep — run in Supabase SQL Editor (or supabase db push)
+-- HKBookkeep — run in Supabase SQL Editor (or supabase db push)
 -- Storage: create bucket "receipts" (private) if not exists via Dashboard or:
 insert into storage.buckets (id, name, public)
 values ('receipts', 'receipts', false)

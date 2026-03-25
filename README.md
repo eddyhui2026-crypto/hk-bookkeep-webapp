@@ -1,4 +1,4 @@
-# Harbix 香港記帳（hk-bookkeep-webapp）
+# HKBookkeep（香港記帳）（hk-bookkeep-webapp）
 
 Next.js 16 + Supabase（Auth／Postgres／Storage）+ Stripe Billing（英國戶口、HKD）+ Unosend（聯絡表單電郵）。
 

@@ -101,12 +101,48 @@ const FREELANCE_DEFS: readonly SeedDef[] = [
   { slug: "cat_fl_travel", zh: "交通通訊", en: "Travel & telecom", color: "#f59e0b" },
   { slug: "cat_fl_training", zh: "專業進修", en: "Training & CPD", color: "#8b5cf6" },
   { slug: "cat_fl_office", zh: "辦公耗材", en: "Office supplies", color: "#64748b" },
+  {
+    slug: "cat_fl_home_office",
+    zh: "居家辦公（水電煤寬頻比例）",
+    en: "Home office (utilities & broadband share)",
+    color: "#78716c",
+  },
+  {
+    slug: "cat_fl_mpf",
+    zh: "強積金（MPF／自僱強制供款）",
+    en: "MPF (mandatory self-employed contributions)",
+    color: "#059669",
+  },
   { slug: "cat_fl_marketing", zh: "市場推廣", en: "Marketing", color: "#ec4899" },
+  {
+    slug: "cat_fl_entertainment",
+    zh: "應酬／送禮（客戶／夥伴）",
+    en: "Entertainment & gifts (clients & partners)",
+    color: "#d946ef",
+  },
+  {
+    slug: "cat_fl_tax_provision",
+    zh: "稅款預留（提醒／撥備）",
+    en: "Tax provision (reminder / set-aside)",
+    color: "#b45309",
+  },
   { slug: "cat_fl_other", zh: "其他", en: "Other", color: "#94a3b8" },
 ];
 
 const SHOP_DEFS: readonly SeedDef[] = [
   { slug: "cat_sh_platform", zh: "平台佣金", en: "Marketplace fees", color: "#8b5cf6" },
+  {
+    slug: "cat_sh_tx_fees",
+    zh: "支付手續費（Stripe／PayPal／PayMe 等）",
+    en: "Payment fees (Stripe, PayPal, PayMe, etc.)",
+    color: "#7c3aed",
+  },
+  {
+    slug: "cat_sh_refunds",
+    zh: "退款／退貨",
+    en: "Refunds & returns",
+    color: "#ef4444",
+  },
   { slug: "cat_sh_ads", zh: "廣告費", en: "Advertising", color: "#ec4899" },
   {
     slug: "cat_sh_ship",
@@ -126,6 +162,12 @@ const SHOP_DEFS: readonly SeedDef[] = [
     zh: "包裝物料",
     en: "Packaging materials",
     color: "#a855f7",
+  },
+  {
+    slug: "cat_sh_samples",
+    zh: "樣品／損耗（推廣／KOL）",
+    en: "Samples & spoilage (promo / KOL)",
+    color: "#c026d3",
   },
   {
     slug: "cat_sh_software",
@@ -161,4 +203,12 @@ export const LEDGER_MAX = 10;
 /** 每本生意簿分類總數上限（含建立時預設種子） */
 export const CATEGORY_MAX_PER_LEDGER = 30;
 export const RECEIPT_MAX_BYTES = 600 * 1024; // ~600KB server cap after client target 500KB
+
+/** 浮動「影收據」隊列上限（出街連拍多張，記憶體與 UX 平衡） */
+export const RECEIPT_SNAP_QUEUE_MAX = 24;
+
+/** 一鍵 ZIP：最多收據檔數（配合 serverless timeout） */
+export const RECEIPT_ZIP_MAX_FILES = 200;
+/** 一鍵 ZIP：源流（未壓縮）總量上限（bytes） */
+export const RECEIPT_ZIP_MAX_BYTES_UNCOMPRESSED = 80 * 1024 * 1024;
 export const TRIAL_DAYS = 14;

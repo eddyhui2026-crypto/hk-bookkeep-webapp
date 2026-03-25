@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     const from =
-      env.CONTACT_FROM_EMAIL ?? `Harbix 記帳 <${PUBLIC_SUPPORT_EMAIL}>`;
+      env.CONTACT_FROM_EMAIL ?? `HKBookkeep <${PUBLIC_SUPPORT_EMAIL}>`;
 
     const res = await fetch(UNOSEND_SEND_URL, {
       method: "POST",
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
         from,
         to: [to],
         reply_to: email,
-        subject: `[Harbix 記帳] 聯絡表單 — ${name || email}`,
+        subject: `[HKBookkeep] 聯絡表單 — ${name || email}`,
         text: `來自: ${name || "(無)"}\n電郵: ${email}\n\n${message}`,
       }),
     });

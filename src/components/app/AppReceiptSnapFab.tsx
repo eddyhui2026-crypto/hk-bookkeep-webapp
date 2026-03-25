@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import { useAppSnap } from "@/components/app/AppSnapContext";
+import { RECEIPT_SNAP_QUEUE_MAX } from "@/lib/constants";
 
-function CameraGlyph({ className }: { className?: string }) {
+function CameraGlyph({ className }: { className: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +31,14 @@ export function AppReceiptSnapFab() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { setPendingReceipt, snapEnabled, defaultLedgerId } = useAppSnap();
+  const { enqueueReceipt, snapEnabled, defaultLedgerId } = useAppSnap();
+  const [fabErr, setFabErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!fabErr) return;
+    const id = window.setTimeout(() => setFabErr(null), 4500);
+    return () => window.clearTimeout(id);
+  }, [fabErr]);
 
   if (!snapEnabled || !defaultLedgerId) return null;
 
@@ -44,7 +52,10 @@ export function AppReceiptSnapFab() {
 
   const onFile = (f: File | null) => {
     if (!f || !f.type.startsWith("image/")) return;
-    setPendingReceipt(f);
+    if (!enqueueReceipt(f)) {
+      setFabErr(t("dashboard.receiptQueueFull", { max: RECEIPT_SNAP_QUEUE_MAX }));
+      return;
+    }
     const onDashboard = pathname === "/app";
     const ledgerOk = !urlLedger || urlLedger === targetLedger;
     if (!onDashboard || !ledgerOk) {
@@ -68,6 +79,18 @@ export function AppReceiptSnapFab() {
           onFile(f);
         }}
       />
+      {fabErr && (
+        <div
+          className="print:hidden fixed z-[46] max-w-[min(calc(100vw-2rem),18rem)] rounded-lg border border-expense/40 bg-card px-3 py-2 text-xs text-expense shadow-lg"
+          style={{
+            bottom: "max(5.5rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)))",
+            right: "max(1rem, env(safe-area-inset-right, 0px))",
+          }}
+          role="alert"
+        >
+          {fabErr}
+        </div>
+      )}
       <button
         type="button"
         className="print:hidden fixed z-[45] flex max-w-[min(calc(100vw-2rem),15.5rem)] items-center gap-2.5 rounded-full border border-white/15 bg-brand py-2.5 pl-2.5 pr-3.5 text-left text-white shadow-[0_8px_28px_rgba(147,51,234,0.45)] transition hover:bg-brand-hover hover:shadow-[0_10px_32px_rgba(147,51,234,0.5)] focus-visible:outline focus-visible:ring-4 focus-visible:ring-brand/35 active:scale-[0.98] sm:gap-3 sm:py-3 sm:pl-3 sm:pr-4"

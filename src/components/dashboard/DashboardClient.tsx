@@ -21,7 +21,10 @@ import {
   CURRENCIES,
   LEDGER_MAX,
   RECEIPT_MAX_BYTES,
+  RECEIPT_ZIP_MAX_BYTES_UNCOMPRESSED,
+  RECEIPT_ZIP_MAX_FILES,
 } from "@/lib/constants";
+import { currentTaxYearStart } from "@/lib/reports";
 import { useAppSnap } from "@/components/app/AppSnapContext";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { LedgerFxRatesForm } from "@/components/dashboard/LedgerFxRatesForm";
@@ -90,7 +93,8 @@ export function DashboardClient({
   quickAddIncomePrefill: QuickAddIncomePrefill;
 }) {
   const { locale, t } = useI18n();
-  const { pendingReceipt, clearPendingReceipt } = useAppSnap();
+  const { receiptQueue, dequeueReceipt } = useAppSnap();
+  const receiptQueueBacklog = receiptQueue.length;
   const colon = locale === "zh" ? "：" : ": ";
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -160,9 +164,10 @@ export function DashboardClient({
   }, [ledgerDeleteTarget]);
 
   useEffect(() => {
-    if (!pendingReceipt || !activeLedgerId) return;
-    setFile(pendingReceipt);
-    clearPendingReceipt();
+    if (!activeLedgerId || file !== null) return;
+    const next = dequeueReceipt();
+    if (!next) return;
+    setFile(next);
     requestAnimationFrame(() => {
       quickAddRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -170,7 +175,7 @@ export function DashboardClient({
       });
       window.setTimeout(() => amountInputRef.current?.focus(), 350);
     });
-  }, [pendingReceipt, activeLedgerId, clearPendingReceipt]);
+  }, [activeLedgerId, file, receiptQueueBacklog, dequeueReceipt]);
 
   useEffect(() => {
     if (!quickAddIncomePrefill) {
@@ -499,6 +504,25 @@ export function DashboardClient({
     ? `ledgerId=${activeLedgerId}&year=${y}&month=${m}`
     : "";
 
+  const taxYearOptions = (() => {
+    const base = currentTaxYearStart();
+    return [base, base - 1, base - 2];
+  })();
+
+  const [taxExportYear, setTaxExportYear] = useState(() => currentTaxYearStart());
+  useEffect(() => {
+    setTaxExportYear(currentTaxYearStart());
+  }, [activeLedgerId]);
+
+  const taxSummaryQs =
+    activeLedgerId && Number.isInteger(taxExportYear)
+      ? `ledgerId=${activeLedgerId}&taxYear=${taxExportYear}`
+      : "";
+
+  const receiptZipMb = Math.round(
+    RECEIPT_ZIP_MAX_BYTES_UNCOMPRESSED / 1024 / 1024
+  );
+
   const incomeLabel = t("dashboard.income");
   const expenseLabel = t("dashboard.expense");
   const categoryRemaining = Math.max(0, CATEGORY_MAX_PER_LEDGER - categories.length);
@@ -576,6 +600,52 @@ export function DashboardClient({
             >
               {t("dashboard.exportPrintPage")}
             </a>
+          </div>
+          <div className="mt-3 max-w-md space-y-2 rounded-xl border border-border/80 bg-muted/15 p-3">
+            <label className="block text-xs font-medium text-muted">
+              {t("dashboard.taxYearForExport")}
+            </label>
+            <select
+              value={taxExportYear}
+              onChange={(e) => setTaxExportYear(Number(e.target.value))}
+              className="w-full max-w-xs rounded-lg border border-border bg-card px-2 py-1.5 text-sm"
+            >
+              {taxYearOptions.map((start) => (
+                <option key={start} value={start}>
+                  {locale === "zh"
+                    ? `${start}/${String(start + 1).slice(-2)} 年度`
+                    : `${start}/${String(start + 1).slice(-2)}`}
+                </option>
+              ))}
+            </select>
+            {taxSummaryQs && (
+              <>
+                <div>
+                  <a
+                    className="inline-flex rounded-full border border-border px-3 py-1.5 hover:bg-brand/10"
+                    href={`/app/reports/tax-summary/print?${taxSummaryQs}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("dashboard.taxSummaryPrint")}
+                  </a>
+                </div>
+                <div>
+                  <a
+                    className="inline-flex rounded-full border border-border px-3 py-1.5 hover:bg-brand/10"
+                    href={`/api/receipts/zip?${taxSummaryQs}`}
+                  >
+                    {t("dashboard.receiptZipDownload")}
+                  </a>
+                </div>
+                <p className="text-xs text-muted">
+                  {t("dashboard.receiptZipHint", {
+                    files: RECEIPT_ZIP_MAX_FILES,
+                    mb: receiptZipMb,
+                  })}
+                </p>
+              </>
+            )}
           </div>
           <p className="max-w-xl text-muted">{t("dashboard.exportHint")}</p>
         </div>
@@ -843,6 +913,18 @@ export function DashboardClient({
           <h2 className="text-sm font-medium text-foreground">
             {t("dashboard.quickAdd")}
           </h2>
+          {file && (
+            <div className="space-y-2">
+              <p className="rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-xs text-foreground">
+                {t("dashboard.receiptQueuedHint")}
+              </p>
+              {receiptQueueBacklog > 0 && (
+                <p className="text-xs text-muted">
+                  {t("dashboard.receiptQueueBacklog", { n: receiptQueueBacklog })}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <input
               ref={amountInputRef}
@@ -960,7 +1042,9 @@ export function DashboardClient({
               {file ? (
                 <>
                   <span className="max-w-[200px] truncate text-sm text-foreground sm:max-w-xs">
-                    {file.name}
+                    {file.name?.trim()
+                      ? file.name
+                      : t("dashboard.receiptCameraUnnamed")}
                   </span>
                   <button
                     type="button"

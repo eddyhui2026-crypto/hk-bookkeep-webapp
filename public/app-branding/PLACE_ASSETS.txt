@@ -1,4 +1,4 @@
-Harbix app / PWA branding
+HKBookkeep app / PWA branding
 
 - app-icon.svg — 與 src/app/icon.svg 同款（白底、彩色斑點圍繞粗體 B）；可單獨匯出 PNG 做商店圖。
 - apple-touch-icon.png — 180×180 PNG（可由此 SVG 匯出），再在 src/app/layout.tsx 設 metadata.icons.apple。

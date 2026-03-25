@@ -55,12 +55,12 @@ export default async function ArticlePage({
     dateModified: `${(article.dateModified ?? article.datePublished)}T00:00:00.000+08:00`,
     author: {
       "@type": "Organization",
-      name: "Harbix",
+      name: "HKBookkeep",
       url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
-      name: "Harbix",
+      name: "HKBookkeep",
       url: SITE_URL,
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/articles/${article.slug}` },
