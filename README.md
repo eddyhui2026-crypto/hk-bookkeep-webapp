@@ -7,12 +7,14 @@ Next.js 16 + Supabase（Auth／Postgres／Storage）+ Stripe Billing（英國戶
 ## 本機開發
 
 1. 複製環境變數：`cp .env.local.example .env.local`（Windows 可手動複製）並填入。
-2. 在 Supabase SQL Editor 依次執行 [`001_initial.sql`](supabase/migrations/001_initial.sql)、[`002_app_trial_on_signup.sql`](supabase/migrations/002_app_trial_on_signup.sql)、[`003_invoices.sql`](supabase/migrations/003_invoices.sql)；若曾執行過 [`004_invoice_rpc.sql`](supabase/migrations/004_invoice_rpc.sql)，請再執行 [`005_invoice_company_manual_no.sql`](supabase/migrations/005_invoice_company_manual_no.sql)（加 `company_name`、移除舊 RPC）。新部署可略過 004，直接 003 後接 005。Invoice 列印聯絡方式需再執行 [`006_user_invoice_prefs.sql`](supabase/migrations/006_user_invoice_prefs.sql)；收款詳情欄與「Invoice 預設」預填需執行 [`007_invoice_payment_details_defaults.sql`](supabase/migrations/007_invoice_payment_details_defaults.sql)；發票列表「編輯」需執行 [`008_invoices_update_policy.sql`](supabase/migrations/008_invoices_update_policy.sql)。Invoice 幣種與「快速記一筆」一致（HKD、CNY、USD、EUR、GBP、JPY、SGD、MOP）需執行 [`009_invoices_currency_all.sql`](supabase/migrations/009_invoices_currency_all.sql)。儀表板「多幣種圖表折合 HKD」需執行 [`010_ledger_fx_rates.sql`](supabase/migrations/010_ledger_fx_rates.sql)。（001 已包含 `receipts` bucket。）
+2. 在 Supabase SQL Editor 依次執行 [`001_initial.sql`](supabase/migrations/001_initial.sql)、[`002_app_trial_on_signup.sql`](supabase/migrations/002_app_trial_on_signup.sql)、[`003_invoices.sql`](supabase/migrations/003_invoices.sql)；試用結束後保留／提醒欄位見 [`014_trial_retention_tracking.sql`](supabase/migrations/014_trial_retention_tracking.sql)；若曾執行過 [`004_invoice_rpc.sql`](supabase/migrations/004_invoice_rpc.sql)，請再執行 [`005_invoice_company_manual_no.sql`](supabase/migrations/005_invoice_company_manual_no.sql)（加 `company_name`、移除舊 RPC）。新部署可略過 004，直接 003 後接 005。Invoice 列印聯絡方式需再執行 [`006_user_invoice_prefs.sql`](supabase/migrations/006_user_invoice_prefs.sql)；收款詳情欄與「Invoice 預設」預填需執行 [`007_invoice_payment_details_defaults.sql`](supabase/migrations/007_invoice_payment_details_defaults.sql)；發票列表「編輯」需執行 [`008_invoices_update_policy.sql`](supabase/migrations/008_invoices_update_policy.sql)。Invoice 幣種與「快速記一筆」一致（HKD、CNY、USD、EUR、GBP、JPY、SGD、MOP）需執行 [`009_invoices_currency_all.sql`](supabase/migrations/009_invoices_currency_all.sql)。儀表板「多幣種圖表折合 HKD」需執行 [`010_ledger_fx_rates.sql`](supabase/migrations/010_ledger_fx_rates.sql)。（001 已包含 `receipts` bucket。）
 3. Supabase Auth：啟用 Email（密碼）、Google；**Redirect URLs** 加入本機與各正式網域嘅 `/auth/callback` 同 `/auth/reset-password`，例如：`http://localhost:3000/auth/callback`、`http://localhost:3000/auth/reset-password`、`https://hkbookkeep.harbix.app/auth/callback`、`https://hkbookkeep.harbix.app/auth/reset-password`、`https://twbookkeep.harbix.app/auth/callback`、`https://twbookkeep.harbix.app/auth/reset-password`、`https://sgbookkeep.harbix.app/auth/callback`、`https://sgbookkeep.harbix.app/auth/reset-password`。
 4. Stripe：建立 HKD **月費**／**年費** Price（結帳**唔**再加試用期，試用只由 app／`profiles.trial_ends_at` 計）、Webhook（`customer.subscription.*`、`checkout.session.completed`）指向 `/api/stripe/webhook`。
 5. `npm install` → `npm run dev`
 
 本機要跳過「未訂閱不可記帳」可設 `NEXT_PUBLIC_DEV_FULL_ACCESS=1`（**唔好**用於正式環境）。
+
+6. **試用結束後 T+30 電郵、T+60／T+90 清除**（私隱政策 §6）：`vercel.json` 已排程每日 UTC 02:00 呼叫 `/api/cron/trial-retention`。請設定 **`CRON_SECRET`**（隨機字串；請求須 `Authorization: Bearer …`），並確認 **`RESEND_API_KEY` 或 `UNOSEND_API_KEY`** 已設。手動觸發：`curl -H "Authorization: Bearer $CRON_SECRET" "https://你的網域/api/cron/trial-retention"`。
 
 ## 腳本
 
@@ -30,5 +32,4 @@ Next.js 16 + Supabase（Auth／Postgres／Storage）+ Stripe Billing（英國戶
 
 ## 尚未實作（可下一步加）
 
-- **試用結束後 T+30 電郵、T+60／T+90 刪除排程**：需 Vercel Cron（或類似）+ 以 `profiles.trial_ends_at`／`subscription_status` 篩選，用 Unosend（或 Supabase SMTP）發信、用 service role 刪資料。
 - **條款／私隱全文**：目前 `(marketing)/terms` 與 `privacy` 為摘要，可換成律師審閱後嘅完整 HTML／MD。

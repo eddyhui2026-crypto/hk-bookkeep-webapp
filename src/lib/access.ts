@@ -14,6 +14,7 @@ export type ProfileRow = {
   trial_ends_at: string | null;
   current_period_end: string | null;
   stripe_customer_id?: string | null;
+  trial_retention_reminder_sent_at?: string | null;
 };
 
 /**

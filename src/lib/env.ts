@@ -18,6 +18,8 @@ const server = z.object({
   /** 已於 Resend／Unosend 驗證嘅發件人；可填純電郵或「顯示名稱 <email@domain>」 */
   CONTACT_FROM_EMAIL: z.string().min(1).optional(),
   CONTACT_TO_EMAIL: z.string().email().optional(),
+  /** Vercel Cron：`Authorization: Bearer <secret>`；正式環境務必設定 */
+  CRON_SECRET: z.string().min(8).optional(),
 });
 
 const client = z.object({
@@ -49,6 +51,7 @@ export function getServerEnv() {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
     CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
+    CRON_SECRET: process.env.CRON_SECRET,
   });
 }
 

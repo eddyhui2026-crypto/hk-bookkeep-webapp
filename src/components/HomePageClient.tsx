@@ -56,6 +56,7 @@ export function HomePageClient() {
         </div>
         <div className="mt-10 flex shrink-0 justify-center lg:mt-0 lg:block lg:justify-self-end lg:pt-1">
           <HomePhoneMockup
+            market={market}
             appTitle={getSiteName(market)}
             appSubtitle={t("home.mockupAppSubtitle")}
             receiptLabel={t("home.mockupReceipt")}
@@ -63,6 +64,11 @@ export function HomePageClient() {
             categorySample={t("home.mockupCategorySample")}
             submitLabel={t("home.mockupSubmit")}
             hintLabel={t("home.mockupHint")}
+            belowCameraLabel={t("home.mockupBelowCameraLabel")}
+            belowInvoiceLabel={
+              market === "tw" ? t("home.mockupBelowInvoiceLabel") : undefined
+            }
+            receiptMockSubtitle={t("home.mockupReceiptMockSubtitle")}
           />
         </div>
       </div>
