@@ -68,11 +68,11 @@ export const sgEnPatchLedger = {
     receiptLoading: "Loading…",
     fabQuickSnap: "Snap receipt",
     fabQuickSnapLine1: "Snap receipt",
-    fabQuickSnapLine2: "Snap several while out; enter them back at your desk",
+    fabQuickSnapLine2: "Snap a receipt, then use Quick entry",
     fabQuickSnapAria:
-      "Camera for receipts; queue multiple, fill in on the overview",
+      "Take a receipt photo; it attaches to Quick entry on the overview—fill in details and tap Add",
     fabQuickSnapHint:
-      "Opens the camera. Snap several receipts—they queue up. On the overview you’ll fill them one by one; after each submit the next opens automatically.",
+      "Opens the camera. After you snap, the photo appears on Quick entry—enter amount, type, date (and category if you like), then tap Add to save with the receipt.",
     receiptClose: "Close",
     receiptOpenErr: "Could not open the receipt. Please try again.",
     delete: "Delete",
@@ -94,11 +94,11 @@ export const sgEnPatchLedger = {
     receiptNone: "No file selected",
     receiptClear: "Remove",
     receiptQueuedHint:
-      "Receipt image attached. Enter amount, type, date (and category if you like), then submit—the receipt uploads with the entry.",
+      "Receipt attached. In Quick entry, enter amount, type, date (and category if you like), then tap Add—the receipt saves with the entry.",
     receiptQueueBacklog:
-      "{n} more in queue (after you submit, the next one opens automatically).",
+      "{n} more receipt photo(s) not entered yet—submit this entry to open the next.",
     receiptQueueFull:
-      "Queue is full ({max} max). Enter a few receipts first or keep this tab on the overview.",
+      "Too many pending photos ({max} max). Submit this entry first and stay on the overview.",
     receiptCameraUnnamed: "(Camera photo)",
     receiptFileRejected:
       "Couldn’t detect an image—some phones omit the file type after the camera. Try again or pick JPG/PNG from your library under the form.",

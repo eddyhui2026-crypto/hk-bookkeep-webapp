@@ -68,11 +68,11 @@ export const sgZhPatchLedger = {
     receiptLoading: "加载中…",
     fabQuickSnap: "拍收据入账",
     fabQuickSnapLine1: "拍收据",
-    fabQuickSnapLine2: "外出可连拍多张，回家再逐张入账",
+    fabQuickSnapLine2: "拍下收据，在「快速记一笔」入账",
     fabQuickSnapAria:
-      "使用相机拍收据，可排队多张；回到「快速记一笔」逐张填写金额",
+      "使用相机拍收据；照片会加到概览「快速记一笔」，填写金额与资料后按加入",
     fabQuickSnapHint:
-      "点一下打开相机。可连续拍多张照片会先排队；回到概览后会逐张跳出，填完一笔送出后自动打开下一张。",
+      "点一下打开相机。拍摄后会附加到概览「快速记一笔」—请填金额、支出／收入、日期（与可选分类），再按「加入」一并保存收据。",
     receiptClose: "关闭",
     receiptOpenErr: "无法打开收据，请稍后再试。",
     delete: "删除",
@@ -92,11 +92,10 @@ export const sgZhPatchLedger = {
     receiptNone: "未选择文件",
     receiptClear: "移除",
     receiptQueuedHint:
-      "已附加收据照片。请填写金额、支出／收入、日期（与可选分类），再按「加入」— 收据会一并保存。",
-    receiptQueueBacklog:
-      "队列中尚有 {n} 张照片等待中（送出本笔后会自动打开下一张）。",
+      "已附加收据照片。请在「快速记一笔」填写金额、支出／收入、日期（与可选分类），再按「加入」— 收据会一并保存。",
+    receiptQueueBacklog: "尚有 {n} 张照片未入账；送出本笔后会打开下一张。",
     receiptQueueFull:
-      "队列已满（最多 {max} 张）。请先入账或将浏览器分页保持在概览。",
+      "暂时无法再拍（最多 {max} 张未处理）。请先送出本笔并留在概览。",
     receiptCameraUnnamed: "（相机照片）",
     receiptFileRejected:
       "检测不到图片文件（手机相机有时没有 MIME）。请再试拍照，或使用「选择文件」从相册选择 JPG／PNG。",

@@ -68,11 +68,11 @@ export const twI18nPatchLedger = {
     receiptLoading: "載入中…",
     fabQuickSnap: "拍收據入帳",
     fabQuickSnapLine1: "拍收據",
-    fabQuickSnapLine2: "外出可連拍多張，回家再逐張入帳",
+    fabQuickSnapLine2: "拍下收據，在「快速記一筆」入帳",
     fabQuickSnapAria:
-      "使用相機拍收據，可排隊多張；回到「快速記一筆」逐張填寫金額",
+      "使用相機拍收據；照片會加到概覽「快速記一筆」，填寫金額與資料後按加入",
     fabQuickSnapHint:
-      "點一下開啟相機。可連續拍多張，照片會先排隊；回到概覽後會逐張跳出，填完一筆送出後自動開啟下一張。",
+      "點一下開啟相機。拍攝後會附加到概覽「快速記一筆」—請填金額、支出／收入、日期（與可選分類），再按「加入」一併儲存收據。",
     receiptClose: "關閉",
     receiptOpenErr: "無法開啟收據，請稍後再試。",
     delete: "刪除",
@@ -92,14 +92,14 @@ export const twI18nPatchLedger = {
     receiptNone: "未選擇檔案",
     receiptClear: "移除",
     receiptQueuedHint:
-      "已附加收據照片。請填寫金額、支出／收入、日期（與可選分類），再按「加入」— 收據會一併儲存。",
-    receiptQueueBacklog:
-      "佇列中尚有 {n} 張照片等待中（送出本筆後會自動開啟下一張）。",
+      "已附加收據照片。請於「快速記一筆」填寫金額、支出／收入、日期（與可選分類），再按「加入」— 收據會一併儲存。",
+    receiptQueueBacklog: "尚有 {n} 張照片未入帳；送出本筆後會開啟下一張。",
     receiptQueueFull:
-      "佇列已滿（最多 {max} 張）。請先入帳或將瀏覽器分頁保持在概覽。",
+      "暫時無法再拍（最多 {max} 張未處理）。請先送出本筆並留在概覽。",
     receiptCameraUnnamed: "（相機照片）",
     receiptFileRejected:
       "偵測不到圖片檔（手機相機有時沒有 MIME）。請再試拍照，或使用「選擇檔案」從相簿選擇 JPG／PNG。",
+    twEinvoiceFabShort: "電子發票",
     twEinvoiceScan: "掃描電子發票（左側 QR）",
     twEinvoiceScanHint:
       "對準統一發票證明聯左側 QR；公開格式、裝置端解析，不需付費 API。",

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/app/AppHeader";
 import { AppSnapProvider } from "@/components/app/AppSnapContext";
 import { AppReceiptSnapFab } from "@/components/app/AppReceiptSnapFab";
+import { TwEinvoiceScanProvider } from "@/components/app/TwEinvoiceScanContext";
 import {
   canWriteSubscription,
   type ProfileRow,
@@ -51,10 +52,12 @@ export default async function AppLayout({
         snapEnabled={snapEnabled}
         defaultLedgerId={defaultLedgerId}
       >
-        {children}
-        <Suspense fallback={null}>
-          <AppReceiptSnapFab />
-        </Suspense>
+        <TwEinvoiceScanProvider>
+          {children}
+          <Suspense fallback={null}>
+            <AppReceiptSnapFab />
+          </Suspense>
+        </TwEinvoiceScanProvider>
       </AppSnapProvider>
     </div>
   );

@@ -420,10 +420,11 @@ export const hkMessages = {
       receiptLoading: "載入中…",
       fabQuickSnap: "影收據入數",
       fabQuickSnapLine1: "影收據",
-      fabQuickSnapLine2: "可出街連拍多張，返到再逐張入數",
-      fabQuickSnapAria: "用相機影收據，可排隊多張；返到「快速記一筆」逐張填金額",
+      fabQuickSnapLine2: "影低收據，喺「快速記一筆」入數",
+      fabQuickSnapAria:
+        "用相機影收據；相會加到概覽「快速記一筆」，填金額同資料再按加入",
       fabQuickSnapHint:
-        "唧一下開相機。可連影幾張，相會先入隊；返到概覽會逐張彈出，填完一筆提交後自動開下一張。",
+        "唧一下開相機。影完會附加到概覽「快速記一筆」—請填金額、支出／收入、日期（同可選分類），再按「加入」一併儲存收據。",
       receiptClose: "關閉",
       receiptOpenErr: "無法開啟收據，請稍後再試。",
       delete: "刪除",
@@ -443,9 +444,9 @@ export const hkMessages = {
       receiptNone: "未選擇檔案",
       receiptClear: "移除",
       receiptQueuedHint:
-        "已附加收據相。請填金額、支出／收入、日期（同可選分類），再按「加入」— 收據會同一齊儲存。",
-      receiptQueueBacklog: "隊列仲有 {n} 張相等緊（提交本筆後會自動開下一張）。",
-      receiptQueueFull: "隊列已滿（最多 {max} 張）。請先入數或將瀏覽器分頁保持喺概覽。",
+        "已附加收據相。請喺「快速記一筆」填金額、支出／收入、日期（同可選分類），再按「加入」— 收據會同一齊儲存。",
+      receiptQueueBacklog: "仲有 {n} 張相未入數；提交呢筆後會開下一張。",
+      receiptQueueFull: "暫時影唔到更多（最多 {max} 張相未處理）。請先提交呢筆並留喺概覽。",
       receiptCameraUnnamed: "（相機相片）",
       receiptFileRejected:
         "偵測唔到係圖片檔（手機相機有時冇 MIME）。請再試影相，或用「選擇檔案」從相簿揀 JPG／PNG。",
@@ -983,10 +984,11 @@ export const hkMessages = {
       receiptLoading: "Loading…",
       fabQuickSnap: "Snap receipt",
       fabQuickSnapLine1: "Snap receipt",
-      fabQuickSnapLine2: "Snap several while out; enter them back at your desk",
-      fabQuickSnapAria: "Camera for receipts; queue multiple, fill in on the overview",
+      fabQuickSnapLine2: "Snap a receipt, then use Quick entry",
+      fabQuickSnapAria:
+        "Take a receipt photo; it attaches to Quick entry on the overview—fill in details and tap Add",
       fabQuickSnapHint:
-        "Opens the camera. Snap several receipts—they queue up. On the overview you’ll fill them one by one; after each submit the next opens automatically.",
+        "Opens the camera. After you snap, the photo appears on Quick entry—enter amount, type, date (and category if you like), then tap Add to save with the receipt.",
       receiptClose: "Close",
       receiptOpenErr: "Could not open the receipt. Please try again.",
       delete: "Delete",
@@ -1006,9 +1008,11 @@ export const hkMessages = {
       receiptNone: "No file selected",
       receiptClear: "Remove",
       receiptQueuedHint:
-        "Receipt image attached. Enter amount, type, date (and category if you like), then submit—the receipt uploads with the entry.",
-      receiptQueueBacklog: "{n} more in queue (after you submit, the next one opens automatically).",
-      receiptQueueFull: "Queue is full ({max} max). Enter a few receipts first or keep this tab on the overview.",
+        "Receipt attached. In Quick entry, enter amount, type, date (and category if you like), then tap Add—the receipt saves with the entry.",
+      receiptQueueBacklog:
+        "{n} more receipt photo(s) not entered yet—submit this entry to open the next.",
+      receiptQueueFull:
+        "Too many pending photos ({max} max). Submit this entry first and stay on the overview.",
       receiptCameraUnnamed: "(Camera photo)",
       receiptFileRejected:
         "Couldn’t detect an image—some phones omit the file type after the camera. Try again or pick JPG/PNG from your library under the form.",
