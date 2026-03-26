@@ -84,11 +84,13 @@ export function LoginForm() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signInWithOtp({
       email: em,
-      password,
       options: {
-        emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        shouldCreateUser: true,
+        emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
+          "/auth/reset-password"
+        )}`,
       },
     });
     setLoading(false);
@@ -117,7 +119,7 @@ export function LoginForm() {
     setLoading(true);
     const supabase = createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(em, {
-      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent("/auth/reset-password")}`,
+      redirectTo: `${origin}/auth/reset-password`,
     });
     setLoading(false);
     if (error) {
@@ -198,17 +200,19 @@ export function LoginForm() {
               placeholder={t("login.emailPh")}
               className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/30"
             />
-            <input
-              type="password"
-              name="password"
-              autoComplete={mode === "signIn" ? "current-password" : "new-password"}
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("login.passwordPh")}
-              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/30"
-            />
+            {mode === "signIn" && (
+              <input
+                type="password"
+                name="password"
+                autoComplete="current-password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("login.passwordPh")}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand/30"
+              />
+            )}
             {mode === "signIn" && (
               <button
                 type="button"
@@ -237,6 +241,7 @@ export function LoginForm() {
               type="button"
               onClick={() => {
                 setMode((m) => (m === "signIn" ? "signUp" : "signIn"));
+                setPassword("");
                 setErrMsg(null);
                 setInfoMsg(null);
               }}
