@@ -47,6 +47,7 @@ export function I18nProvider({
 }) {
   const readStored = useCallback((): Locale => {
     if (market === "tw") return "zh";
+    // SG: English-first default; user may switch to 中文 (simplified patch) via locale toggle.
     if (typeof window === "undefined") {
       return market === "sg" ? "en" : "zh";
     }

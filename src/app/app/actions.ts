@@ -12,18 +12,26 @@ import {
 } from "@/lib/constants";
 import type { CurrencyCode } from "@/lib/constants";
 import { sanitizeFxPatch } from "@/lib/fx-rates";
+import {
+  serverActionUiCategoryMax,
+  serverActionUiLedgerMax,
+  serverActionUiMessage,
+} from "@/lib/i18n/server-action-ui";
 import type { Locale } from "@/lib/i18n/messages";
+import type { Market } from "@/lib/market";
 import { getMarket } from "@/lib/market-server";
 
 async function requireUserAndProfile(): Promise<{
   userId: string;
   profile: ProfileRow | null;
+  market: Market;
 }> {
+  const market = await getMarket();
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
+  if (!user) throw new Error(serverActionUiMessage(market, "notSignedIn"));
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -34,14 +42,16 @@ async function requireUserAndProfile(): Promise<{
   return {
     userId: user.id,
     profile: profile as ProfileRow | null,
+    market,
   };
 }
 
-async function requireWrite() {
-  const { profile } = await requireUserAndProfile();
-  if (!canWriteSubscription(profile)) {
-    throw new Error("目前為只讀模式，請訂閱或完成付款。");
+async function requireWrite(): Promise<{ userId: string; market: Market }> {
+  const ctx = await requireUserAndProfile();
+  if (!canWriteSubscription(ctx.profile)) {
+    throw new Error(serverActionUiMessage(ctx.market, "readOnly"));
   }
+  return { userId: ctx.userId, market: ctx.market };
 }
 
 export async function createLedger(
@@ -49,20 +59,18 @@ export async function createLedger(
   template?: "freelance" | "shop",
   uiLocale: Locale = "zh"
 ) {
-  await requireWrite();
+  const { userId, market } = await requireWrite();
   const trimmed = name.trim();
   let finalName = trimmed;
   if (!finalName) {
     if (template === "shop") finalName = uiLocale === "en" ? "Shop A" : "網店 A";
     else if (template === "freelance") finalName = "Freelance";
   }
-  if (!finalName) throw new Error("請輸入生意簿名稱或揀範本");
+  if (!finalName) {
+    throw new Error(serverActionUiMessage(market, "ledgerNameOrTemplate"));
+  }
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
 
   const { count } = await supabase
     .from("ledgers")
@@ -70,22 +78,23 @@ export async function createLedger(
     .is("deleted_at", null);
 
   if ((count ?? 0) >= LEDGER_MAX) {
-    throw new Error(`最多 ${LEDGER_MAX} 本生意簿`);
+    throw new Error(serverActionUiLedgerMax(market, LEDGER_MAX));
   }
 
   const { data: ledger, error: le } = await supabase
     .from("ledgers")
-    .insert({ user_id: user.id, name: finalName })
+    .insert({ user_id: userId, name: finalName })
     .select("id")
     .single();
 
-  if (le || !ledger) throw new Error(le?.message ?? "建立失敗");
+  if (le || !ledger) {
+    throw new Error(le?.message ?? serverActionUiMessage(market, "createFailed"));
+  }
 
-  const market = await getMarket();
   const seed = categorySeedRowsForNewLedger(template, uiLocale, market);
 
   const cats = seed.map((c, i) => ({
-    user_id: user.id,
+    user_id: userId,
     ledger_id: ledger.id,
     name: c.name,
     color: c.color,
@@ -101,9 +110,9 @@ export async function createLedger(
 }
 
 export async function renameLedger(ledgerId: string, name: string) {
-  await requireWrite();
+  const { market } = await requireWrite();
   const trimmed = name.trim();
-  if (!trimmed) throw new Error("請輸入生意簿名稱");
+  if (!trimmed) throw new Error(serverActionUiMessage(market, "ledgerNameRequired"));
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -119,30 +128,25 @@ export async function updateLedgerFxRates(
   ledgerId: string,
   patch: Record<string, unknown>
 ) {
-  await requireWrite();
-  const market = await getMarket();
+  const { userId, market } = await requireWrite();
   const anchor = defaultCurrencyForMarket(market);
   const cleaned = sanitizeFxPatch(patch, anchor);
   if (Object.keys(cleaned).length === 0) {
-    throw new Error("請輸入有效匯率（正數）");
+    throw new Error(serverActionUiMessage(market, "fxInvalid"));
   }
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
 
   const { data: row, error: selErr } = await supabase
     .from("ledgers")
     .select("fx_rates_to_anchor")
     .eq("id", ledgerId)
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .is("deleted_at", null)
     .maybeSingle();
 
   if (selErr) throw new Error(selErr.message);
-  if (!row) throw new Error("找不到生意簿");
+  if (!row) throw new Error(serverActionUiMessage(market, "ledgerNotFound"));
 
   const prev =
     row.fx_rates_to_anchor &&
@@ -157,7 +161,7 @@ export async function updateLedgerFxRates(
     .from("ledgers")
     .update({ fx_rates_to_anchor: next })
     .eq("id", ledgerId)
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .is("deleted_at", null);
 
   if (error) throw new Error(error.message);
@@ -184,21 +188,17 @@ export async function createTransaction(input: {
   note: string;
   txDate: string;
 }) {
-  await requireWrite();
+  const { userId, market } = await requireWrite();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
 
   if (!CURRENCIES.includes(input.currency as CurrencyCode)) {
-    throw new Error("不支援嘅幣種");
+    throw new Error(serverActionUiMessage(market, "currencyUnsupported"));
   }
 
   const { data, error } = await supabase
     .from("transactions")
     .insert({
-      user_id: user.id,
+      user_id: userId,
       ledger_id: input.ledgerId,
       category_id: input.categoryId,
       type: input.type,
@@ -230,12 +230,8 @@ export async function updateTransactionCategory(
   transactionId: string,
   categoryId: string | null
 ) {
-  await requireWrite();
+  const { userId, market } = await requireWrite();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
 
   const { data: tx, error: txErr } = await supabase
     .from("transactions")
@@ -244,7 +240,7 @@ export async function updateTransactionCategory(
     .maybeSingle();
 
   if (txErr) throw new Error(txErr.message);
-  if (!tx) throw new Error("找不到交易");
+  if (!tx) throw new Error(serverActionUiMessage(market, "txNotFound"));
 
   if (categoryId) {
     const { data: cat, error: catErr } = await supabase
@@ -255,14 +251,14 @@ export async function updateTransactionCategory(
       .maybeSingle();
 
     if (catErr) throw new Error(catErr.message);
-    if (!cat) throw new Error("分類必須屬於同一本生意簿");
+    if (!cat) throw new Error(serverActionUiMessage(market, "categorySameLedger"));
   }
 
   const { error } = await supabase
     .from("transactions")
     .update({ category_id: categoryId })
     .eq("id", transactionId)
-    .eq("user_id", user.id);
+    .eq("user_id", userId);
 
   if (error) throw new Error(error.message);
   revalidatePath("/app");
@@ -277,15 +273,11 @@ export async function deleteTransaction(transactionId: string) {
 }
 
 export async function addCategory(ledgerId: string, name: string, color: string) {
-  await requireWrite();
+  const { userId, market } = await requireWrite();
   const trimmed = name.trim();
-  if (!trimmed) throw new Error("請輸入分類名稱");
+  if (!trimmed) throw new Error(serverActionUiMessage(market, "categoryNameRequired"));
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("未登入");
 
   const { count, error: cntErr } = await supabase
     .from("categories")
@@ -294,7 +286,7 @@ export async function addCategory(ledgerId: string, name: string, color: string)
 
   if (cntErr) throw new Error(cntErr.message);
   if ((count ?? 0) >= CATEGORY_MAX_PER_LEDGER) {
-    throw new Error(`每本生意簿最多 ${CATEGORY_MAX_PER_LEDGER} 個分類`);
+    throw new Error(serverActionUiCategoryMax(market, CATEGORY_MAX_PER_LEDGER));
   }
 
   const { data: maxRow } = await supabase
@@ -310,7 +302,7 @@ export async function addCategory(ledgerId: string, name: string, color: string)
   const { data, error } = await supabase
     .from("categories")
     .insert({
-      user_id: user.id,
+      user_id: userId,
       ledger_id: ledgerId,
       name: trimmed,
       color: color?.trim() || "#6366f1",
@@ -319,7 +311,9 @@ export async function addCategory(ledgerId: string, name: string, color: string)
     .select("id")
     .single();
 
-  if (error || !data) throw new Error(error?.message ?? "新增分類失敗");
+  if (error || !data) {
+    throw new Error(error?.message ?? serverActionUiMessage(market, "addCategoryFailed"));
+  }
   revalidatePath("/app");
   return data.id;
 }

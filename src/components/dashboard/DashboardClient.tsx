@@ -33,9 +33,11 @@ import { useAppSnap } from "@/components/app/AppSnapContext";
 import { isLikelyReceiptImageFile } from "@/lib/receipt-file";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { LedgerFxRatesForm } from "@/components/dashboard/LedgerFxRatesForm";
+import { TwEinvoiceQrScanModal } from "@/components/dashboard/TwEinvoiceQrScanModal";
 import type { TxForChart } from "@/lib/dashboard-chart-data";
 import { categoryLabel } from "@/lib/category-label";
 import type { QuickAddIncomePrefill } from "@/lib/app-prefill";
+import { taiwanEInvoiceNoteFromParsed } from "@/lib/tw-einvoice-qr";
 
 function appTrialDaysRemaining(trialEndsAt: string | null): number | null {
   if (!trialEndsAt) return null;
@@ -106,6 +108,8 @@ export function DashboardClient({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
+  const [twScanOpen, setTwScanOpen] = useState(false);
+  const [twScanErr, setTwScanErr] = useState<string | null>(null);
 
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState<CurrencyCode>(() =>
@@ -149,6 +153,12 @@ export function DashboardClient({
   const [receiptDownloadingPath, setReceiptDownloadingPath] = useState<string | null>(
     null
   );
+
+  useEffect(() => {
+    if (!twScanErr) return;
+    const id = window.setTimeout(() => setTwScanErr(null), 5200);
+    return () => window.clearTimeout(id);
+  }, [twScanErr]);
 
   useEffect(() => {
     if (!receiptPreview) return;
@@ -368,7 +378,17 @@ export function DashboardClient({
         });
 
         if (file && isLikelyReceiptImageFile(file)) {
-          const blob = await compressImageToJpeg(file);
+          const blob = await compressImageToJpeg(
+            file,
+            undefined,
+            market === "tw"
+              ? "tw"
+              : market === "sg"
+                ? locale === "zh"
+                  ? "sgZh"
+                  : "sg"
+                : "hk"
+          );
           if (blob.size > RECEIPT_MAX_BYTES) {
             setErr(t("dashboard.errReceiptBig"));
             return;
@@ -948,6 +968,47 @@ export function DashboardClient({
           <h2 className="text-sm font-medium text-foreground">
             {t("dashboard.quickAdd")}
           </h2>
+          {market === "tw" && (
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+              <button
+                type="button"
+                className="w-fit rounded-lg border border-brand/50 bg-brand/10 px-3 py-2 text-sm font-medium text-foreground transition hover:bg-brand/15"
+                onClick={() => {
+                  setTwScanErr(null);
+                  setTwScanOpen(true);
+                }}
+              >
+                {t("dashboard.twEinvoiceScan")}
+              </button>
+              <p className="text-xs text-muted">{t("dashboard.twEinvoiceScanHint")}</p>
+            </div>
+          )}
+          {market === "tw" && twScanErr && (
+            <p className="text-xs text-expense" role="alert">
+              {twScanErr}
+            </p>
+          )}
+          {market === "tw" && (
+            <TwEinvoiceQrScanModal
+              open={twScanOpen}
+              onClose={() => setTwScanOpen(false)}
+              onParsed={(p) => {
+                setAmount(String(p.totalAmount));
+                setCurrency("TWD");
+                setType("expense");
+                setTxDate(p.gregorianDateIso);
+                setNote(taiwanEInvoiceNoteFromParsed(p));
+                setTwScanErr(null);
+                requestAnimationFrame(() => amountInputRef.current?.focus());
+              }}
+              title={t("dashboard.twEinvoiceModalTitle")}
+              hint={t("dashboard.twEinvoiceModalHint")}
+              scanning={t("dashboard.twEinvoiceScanning")}
+              closeLabel={t("dashboard.twEinvoiceClose")}
+              errStart={t("dashboard.twEinvoiceErrStart")}
+              onStartError={setTwScanErr}
+            />
+          )}
           {file && (
             <div className="space-y-2">
               <p className="rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-xs text-foreground">

@@ -277,8 +277,39 @@ const SG_ZH_BY_SLUG: Record<string, string> = {
   cat_sh_other: "其他",
 };
 
+/** 台灣站：新建生意簿種子分類名（與 `tw-i18n-patch-ledger` catalog 一致） */
 const TW_ZH_PATCH: Record<string, string> = {
+  cat_def_operating_income: "營業收入",
+  cat_def_cogs: "進貨／成本",
+  cat_def_platform: "平台／通路費用",
+  cat_def_ads: "廣告與推廣",
+  cat_def_logistics: "物流運費",
+  cat_def_software: "軟體訂閱",
+  cat_def_pro: "專業服務",
+  cat_def_other: "其他",
+  cat_fl_project: "專案／服務收入",
+  cat_fl_outsource: "外包協作",
+  cat_fl_software: "軟體與工具",
+  cat_fl_travel: "交通通訊",
+  cat_fl_training: "專業進修",
+  cat_fl_office: "辦公耗材",
+  cat_fl_home_office: "居家辦公（水電瓦斯寬頻比例）",
+  cat_fl_mpf: "強積金（MPF／自僱強制供款）",
+  cat_fl_marketing: "市場推廣",
+  cat_fl_entertainment: "應酬／贈禮（客戶／夥伴）",
+  cat_fl_tax_provision: "稅款預留（提醒／撥備）",
+  cat_fl_other: "其他",
+  cat_sh_platform: "平台佣金",
   cat_sh_tx_fees: "支付手續費（Stripe／PayPal／LINE Pay 等）",
+  cat_sh_refunds: "退款／退貨",
+  cat_sh_ads: "廣告費",
+  cat_sh_ship: "包裝運費",
+  cat_sh_product: "貨物成本",
+  cat_sh_inventory: "庫存／進貨",
+  cat_sh_packmat: "包裝物料",
+  cat_sh_samples: "樣品／損耗（推廣／KOL）",
+  cat_sh_software: "軟體訂閱",
+  cat_sh_other: "其他",
 };
 
 function seedRowsFromDefs(

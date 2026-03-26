@@ -449,6 +449,15 @@ export const hkMessages = {
       receiptCameraUnnamed: "（相機相片）",
       receiptFileRejected:
         "偵測唔到係圖片檔（手機相機有時冇 MIME）。請再試影相，或用「選擇檔案」從相簿揀 JPG／PNG。",
+      twEinvoiceScan: "掃電子發票 QR（左邊）",
+      twEinvoiceScanHint:
+        "對準統一發票證明聯左側 QR；財政部公開欄位，裝置上解析，唔使 API。",
+      twEinvoiceModalTitle: "掃描電子發票 QR",
+      twEinvoiceModalHint: "請掃左邊嗰個；右邊主要係品項延續，辨識會失敗。",
+      twEinvoiceScanning: "相機開緊；對準 QR 至成功讀取。",
+      twEinvoiceClose: "關閉",
+      twEinvoiceErrStart:
+        "開唔到相機（權限或要 HTTPS）。請檢查瀏覽器設定，或用「影收據」手動加相。",
       errReceiptBig: "收據檔案仍然太大",
       errFail: "失敗",
       errDelete: "刪除失敗",
@@ -1003,6 +1012,16 @@ export const hkMessages = {
       receiptCameraUnnamed: "(Camera photo)",
       receiptFileRejected:
         "Couldn’t detect an image—some phones omit the file type after the camera. Try again or pick JPG/PNG from your library under the form.",
+      twEinvoiceScan: "Scan e-invoice QR (left)",
+      twEinvoiceScanHint:
+        "Point at the left QR on a Taiwan uniform invoice; parsed on-device, no API.",
+      twEinvoiceModalTitle: "Scan e-invoice QR",
+      twEinvoiceModalHint:
+        "Use the left QR code; the right one continues line items and won’t parse here.",
+      twEinvoiceScanning: "Camera on—hold steady until the code reads.",
+      twEinvoiceClose: "Close",
+      twEinvoiceErrStart:
+        "Could not start the camera (permission or HTTPS). Check settings or attach a photo instead.",
       errReceiptBig: "Receipt file is still too large",
       errFail: "Something went wrong",
       errDelete: "Delete failed",

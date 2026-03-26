@@ -1,0 +1,163 @@
+/** SGBookKeep — English: app shell, account, invoices, legal page back links */
+
+export const sgEnPatchForms = {
+  terms: {
+    back: "Back to home",
+  },
+  privacy: {
+    back: "Back to home",
+  },
+  app: {
+    home: "Home",
+    accountNav: "Account",
+    feedbackNav: "Report an issue",
+    signOut: "Sign out",
+  },
+  appFeedback: {
+    title: "Report an issue",
+    blurb:
+      "Bugs, confusion, or ideas—send them here. We email the operator with your sign-in address so we can reply.",
+    kindLabel: "Type",
+    kindBug: "Bug / crash",
+    kindConfusion: "Hard to use / unclear",
+    kindBilling: "Subscription / billing",
+    kindSuggestion: "Feature suggestion",
+    kindOther: "Other",
+    messageLabel: "Details",
+    messagePh:
+      "What happened and what were you trying to do? More detail helps us reproduce it.",
+    pageHintLabel: "Where (optional)",
+    pageHintPh: "e.g. Overview, a specific ledger…",
+    pageHintHelp:
+      "Optional—note which page or ledger name if it helps.",
+    submit: "Send report",
+    ok: "Sent. Thank you—we’ll review as soon as we can.",
+    err: "Could not send. Please try again later.",
+    backApp: "← Back to overview",
+  },
+  account: {
+    title: "Account & data",
+    signedInAs: "Signed in as {email}",
+    backApp: "← Back to overview",
+    deleteTitle: "Delete account",
+    deleteIntro:
+      "You are about to permanently delete your account and related data. This cannot be undone, and supports your right to erasure under our Privacy Policy.",
+    deleteItemAuth:
+      "Remove your login (you cannot sign in with this account again)",
+    deleteItemData: "Delete all ledgers, categories, and transactions",
+    deleteItemReceipts: "Delete uploaded receipt images",
+    deleteItemStripe:
+      "Cancel any Stripe subscription and remove the Stripe customer record linked to this app; Stripe may retain some billing records under its own policies.",
+    phraseLabel: "Confirmation phrase",
+    phraseHelpZh:
+      "Chinese UI: type 刪除我的帳號 exactly, or switch to English and type DELETE MY ACCOUNT.",
+    phraseHelpEn:
+      "Type DELETE MY ACCOUNT in the box below (exact match, capitals as shown).",
+    submitDelete: "Delete my account permanently",
+    pending: "Working…",
+    cancel: "Go back without deleting",
+    errPhrase: "That phrase does not match.",
+    errAuth:
+      "You are signed out or your session expired. Sign in and try again.",
+    errConfig: "The server is not configured to complete deletion.",
+    errStorage:
+      "Could not remove receipt files. Try again or email bookkeep@harbix.app.",
+    errDeleteUser:
+      "Could not delete the account. Email bookkeep@harbix.app.",
+  },
+  invoice: {
+    backList: "← Invoices",
+    backApp: "Home",
+    listBackApp: "← Back to overview",
+    listTitle: "Invoices",
+    contactSettings: "Contact (for print)",
+    defaultsSettings: "Invoice defaults",
+    defaultsPageTitle: "Invoice defaults",
+    defaultsPageBlurb:
+      "Saved values pre-fill each new invoice; you can still change them per invoice. For currency or payment method, pick “No default” to use this region’s defaults on new invoices.",
+    saveDefaults: "Save defaults",
+    defaultsErrValidation: "Check field lengths.",
+    defaultsErrSave: "Could not save defaults. Try again later.",
+    defaultsUnsetSelect: "— (no default)",
+    fieldPaymentDetails: "Payment details",
+    paymentDetailsPh:
+      "e.g. PayNow UEN; bank account; PayPal email",
+    paymentDetailsHint:
+      "Shown under “Payment method” on the printed page and PDF.",
+    newInvoice: "New invoice",
+    listEmpty: "No invoices yet.",
+    colNumber: "No.",
+    colDate: "Date",
+    colClient: "Client",
+    colAmount: "Amount",
+    colActions: "Actions",
+    actionEdit: "Edit",
+    actionBookkeep: "Bookkeep (income)",
+    actionPrint: "Print",
+    actionDelete: "Delete",
+    deleteConfirm: "Delete this invoice? This cannot be undone.",
+    errDelete: "Could not delete.",
+    contactPageTitle: "Invoice contact details",
+    contactPageBlurb:
+      "Shown on printed/PDF letterhead (company name is still set per invoice). Add email and/or phone, or leave blank.",
+    contactEmailLabel: "Contact email (free text)",
+    contactEmailPh: "e.g. billing@yourdomain.com",
+    contactPhoneLabel: "Contact phone (free text)",
+    contactPhonePh: "e.g. +65 9123 4567",
+    contactBackList: "← Back to invoices",
+    saveContact: "Save",
+    contactErrValidation: "Check field lengths.",
+    contactErrSave: "Could not save. Try again later.",
+    printContactEmail: "Email:",
+    printContactPhone: "Phone:",
+    printBackList: "Back to list",
+    title: "Simple invoice",
+    disclaimerShort:
+      "This invoice is a basic template. You are responsible for ensuring the content meets your business and tax requirements.",
+    fieldCompany: "Company / trading name (letterhead)",
+    companyPh: "e.g. Studio Pte. Ltd. (optional)",
+    fieldCompanyReg: "Business / UEN (optional)",
+    companyRegPh: "e.g. UEN or local registration no.",
+    fieldClientTax: "Buyer tax ID (optional)",
+    clientTaxPh: "e.g. GST reg. no. / overseas VAT",
+    fieldNumber: "Invoice number",
+    numberHint:
+      "Optional—leave blank for an auto-generated number. If you enter one, it must be unique within your account.",
+    fieldDate: "Date",
+    fieldClient: "Client name",
+    fieldDescription: "Description",
+    descPlaceholder: "e.g. Design service for March",
+    fieldAmount: "Amount",
+    fieldCurrency: "Currency",
+    fieldPayment: "Payment method",
+    fieldNotes: "Notes",
+    pay: {
+      fps: "FPS",
+      bank_transfer: "Bank transfer",
+      paypal: "PayPal",
+      paynow: "PayNow",
+      bank_fast: "FAST",
+      cheque: "Cheque",
+      linepay: "LINE Pay",
+      jkopay: "JKOPay",
+    },
+    editTitle: "Edit invoice",
+    pending: "Working…",
+    submitPrint: "Create invoice (open print page)",
+    submitUpdate: "Save & open print",
+    errValidation:
+      "Check the amount: it must be a number and not negative. Other fields can usually be left blank.",
+    errAuth: "Please sign in again.",
+    errDuplicateNumber:
+      "You already used this invoice number. Choose a different one.",
+    errSave: "Could not save the invoice. Try again later.",
+    docTitle: "INVOICE",
+    printDate: "Date",
+    printBtn: "Print / save as PDF",
+    printHelp:
+      "Use Print, then choose “Save as PDF”.\nIf a URL appears at the bottom, that’s added by the browser—open More settings and turn off Headers and footers.",
+    printBackForm: "Back to form",
+    navLink: "Invoice",
+    dashLink: "Simple invoice",
+  },
+} as const;
