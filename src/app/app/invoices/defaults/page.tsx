@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { InvoiceDefaultsForm } from "@/components/invoice/InvoiceDefaultsForm";
-import { CURRENCIES, type CurrencyCode } from "@/lib/constants";
+import {
+  CURRENCIES,
+  defaultCurrencyForMarket,
+  type CurrencyCode,
+} from "@/lib/constants";
 import {
   invoicePaymentMethodsForMarket,
   type InvoicePaymentMethodKey,
@@ -24,8 +28,13 @@ function mapPrefs(
       ? (pm as InvoicePaymentMethodKey)
       : "";
   const cur = row.default_currency;
+  const marketCurrency = defaultCurrencyForMarket(market);
   const curOk =
-    cur && (CURRENCIES as readonly string[]).includes(cur) ? (cur as CurrencyCode) : "";
+    cur && (CURRENCIES as readonly string[]).includes(cur)
+      ? market !== "hk" && cur === "HKD"
+        ? marketCurrency
+        : (cur as CurrencyCode)
+      : "";
 
   return {
     company_name: row.default_company_name?.trim() ?? "",

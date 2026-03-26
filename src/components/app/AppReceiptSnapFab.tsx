@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import { useMarket } from "@/components/MarketProvider";
@@ -54,9 +54,7 @@ export function AppReceiptSnapFab() {
   const { t } = useI18n();
   const market = useMarket();
   const twEinvoice = useTwEinvoiceScan();
-  const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const { enqueueReceipt, snapEnabled, defaultLedgerId } = useAppSnap();
   const [fabErr, setFabErr] = useState<string | null>(null);
@@ -68,21 +66,16 @@ export function AppReceiptSnapFab() {
   }, [fabErr]);
 
   if (!snapEnabled || !defaultLedgerId) return null;
+  // FAB 只應出現於概覽頁，避免遮擋 Invoice 等流程頁面。
+  if (pathname !== "/app") return null;
 
   const isPrintRoute = pathname.includes("/print");
   if (isPrintRoute) return null;
 
-  const rawLedger = searchParams.get("ledger");
-  const urlLedger =
-    rawLedger && /^[0-9a-f-]{36}$/i.test(rawLedger) ? rawLedger : null;
-  const targetLedger = urlLedger ?? defaultLedgerId;
-
-  const onDashboard = pathname === "/app";
   const showTwEinvoiceFab =
     market === "tw" &&
     twEinvoice &&
     snapEnabled &&
-    onDashboard &&
     !isPrintRoute;
 
   const onFile = (f: File | null) => {
@@ -94,10 +87,6 @@ export function AppReceiptSnapFab() {
     if (!enqueueReceipt(f)) {
       setFabErr(t("dashboard.receiptQueueFull", { max: RECEIPT_SNAP_QUEUE_MAX }));
       return;
-    }
-    const ledgerOk = !urlLedger || urlLedger === targetLedger;
-    if (!onDashboard || !ledgerOk) {
-      router.push(`/app?ledger=${encodeURIComponent(targetLedger)}`);
     }
   };
 

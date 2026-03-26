@@ -24,10 +24,12 @@ function mapNewInvoiceDefaults(
     pmRaw === ""
       ? defaultPaymentMethodForMarket(market)
       : normalizeInvoicePaymentMethod(pmRaw, market);
-  const currency = normalizeInvoiceCurrency(
-    row?.default_currency,
-    defaultCurrencyForMarket(market)
-  );
+  const marketCurrency = defaultCurrencyForMarket(market);
+  const currencyRaw = row?.default_currency;
+  const currency =
+    market !== "hk" && currencyRaw === "HKD"
+      ? marketCurrency
+      : normalizeInvoiceCurrency(currencyRaw, marketCurrency);
 
   return {
     company_name: row?.default_company_name?.trim() ?? "",
