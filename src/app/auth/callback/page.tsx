@@ -53,16 +53,18 @@ function AuthCallbackInner() {
         let next = sp.get("next") ?? "/app";
         if (!next.startsWith("/") || next.startsWith("//")) next = "/app";
 
-        const requestOrigin = stripTrailingSlash(window.location.origin);
-        const origin = pickRedirectOriginAfterOAuthFromSources(
+        /** 呢頁實際載入邊個 host（好多時係 HK 換票） */
+        const pageOrigin = stripTrailingSlash(window.location.origin);
+        /** 換完票之後要落邊個市場（sg/tw/hk） */
+        const afterLoginOrigin = pickRedirectOriginAfterOAuthFromSources(
           sp.get("return_origin"),
           readCookie(OAUTH_RETURN_ORIGIN_COOKIE),
-          requestOrigin
+          pageOrigin
         );
 
         if (!code) {
           clearOauthReturnClient();
-          router.replace(`${origin}/login?error=auth`);
+          router.replace(`${afterLoginOrigin}/login?error=auth`);
           return;
         }
 
@@ -76,11 +78,16 @@ function AuthCallbackInner() {
         const access = sessionData.session?.access_token;
         const refresh = sessionData.session?.refresh_token;
         if (!access || !refresh) {
-          router.replace(`${origin}/login?error=auth`);
+          router.replace(`${afterLoginOrigin}/login?error=auth`);
           return;
         }
 
-        const sync = await fetch(`${origin}/api/auth/session`, {
+        /**
+         * Session sync 必須打 **而家呢頁嘅 origin**（通常係 hkbookkeep）。
+         * 若用 afterLoginOrigin（例如 sg）會變 cross-origin fetch，瀏覽器預設唔帶 cookie／無 CORS → sync 失敗，
+         * 就會誤導去錯誤頁或留在香港。
+         */
+        const sync = await fetch(`${pageOrigin}/api/auth/session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -90,11 +97,11 @@ function AuthCallbackInner() {
           }),
         });
         if (!sync.ok) {
-          router.replace(`${origin}/login?error=auth`);
+          router.replace(`${afterLoginOrigin}/login?error=auth`);
           return;
         }
 
-        window.location.replace(`${origin}${next}`);
+        window.location.replace(`${afterLoginOrigin}${next}`);
       } catch {
         const origin = stripTrailingSlash(
           typeof window !== "undefined" ? window.location.origin : ""
