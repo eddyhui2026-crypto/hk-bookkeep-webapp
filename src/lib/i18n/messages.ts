@@ -128,7 +128,7 @@ export const hkMessages = {
       forgotBack: "返回電郵登入",
       needEmail: "請先輸入電郵地址。",
       checkEmail: "已發出驗證電郵，請檢查收件匣（及垃圾郵件）後再登入。",
-      resetSent: "如該電郵已註冊，你會收到重設密碼連結。",
+      resetSent: "如該電郵已註冊，你會收到重設密碼連結；請留意收件匣同垃圾郵件。",
       loading: "載入…",
     },
     resetPassword: {
@@ -702,7 +702,8 @@ export const hkMessages = {
       needEmail: "Enter your email address first.",
       checkEmail:
         "We sent a confirmation email. Check your inbox (and spam), then sign in.",
-      resetSent: "If that email is registered, you will receive a reset link.",
+      resetSent:
+        "If that email is registered, you will receive a reset link. Check your inbox and spam folder.",
       loading: "Loading…",
     },
     resetPassword: {

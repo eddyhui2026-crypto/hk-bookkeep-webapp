@@ -179,7 +179,7 @@ export const sgZhPatchMarketing = {
     forgotBack: "返回电子邮件登录",
     needEmail: "请先输入电子邮件地址。",
     checkEmail: "已寄出验证信，请检查收件箱（及垃圾邮件）后再登录。",
-    resetSent: "若该电子邮件已注册，您会收到重设密码链接。",
+    resetSent: "若该电子邮件已注册，您会收到重设密码链接；请留意收件箱及垃圾邮件。",
     loading: "加载中…",
   },
   authCallback: {

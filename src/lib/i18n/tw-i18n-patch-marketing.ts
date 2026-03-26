@@ -179,7 +179,7 @@ export const twI18nPatchMarketing = {
     forgotBack: "返回電子郵件登入",
     needEmail: "請先輸入電子郵件地址。",
     checkEmail: "已寄出驗證信，請檢查收件匣（及垃圾郵件）後再登入。",
-    resetSent: "若該電子郵件已註冊，您會收到重設密碼連結。",
+    resetSent: "若該電子郵件已註冊，您會收到重設密碼連結；請留意收件匣及垃圾郵件。",
     loading: "載入中…",
   },
   authCallback: {

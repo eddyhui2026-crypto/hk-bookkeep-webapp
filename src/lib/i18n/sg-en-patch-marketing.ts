@@ -186,7 +186,8 @@ export const sgEnPatchMarketing = {
     needEmail: "Enter your email address first.",
     checkEmail:
       "We sent a confirmation email. Check your inbox (and spam), then sign in.",
-    resetSent: "If that email is registered, you will receive a reset link.",
+    resetSent:
+      "If that email is registered, you will receive a reset link. Check your inbox and spam folder.",
     loading: "Loading…",
   },
   authCallback: {
