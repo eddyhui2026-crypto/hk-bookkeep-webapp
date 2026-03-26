@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -34,31 +35,32 @@ export function AppSnapProvider({
   defaultLedgerId: string | null;
 }) {
   const [receiptQueue, setReceiptQueue] = useState<File[]>([]);
+  /** 同步佇列長度，避免 setState updater 回傳值喺某啲情況唔可靠 */
+  const queueRef = useRef<File[]>([]);
 
   const enqueueReceipt = useCallback((f: File) => {
-    let ok = false;
-    setReceiptQueue((q) => {
-      if (q.length >= RECEIPT_SNAP_QUEUE_MAX) {
-        ok = false;
-        return q;
-      }
-      ok = true;
-      return [...q, f];
-    });
-    return ok;
+    const q = queueRef.current;
+    if (q.length >= RECEIPT_SNAP_QUEUE_MAX) return false;
+    const next = [...q, f];
+    queueRef.current = next;
+    setReceiptQueue(next);
+    return true;
   }, []);
 
   const dequeueReceipt = useCallback((): File | null => {
-    let out: File | null = null;
-    setReceiptQueue((q) => {
-      if (q.length === 0) return q;
-      out = q[0] ?? null;
-      return q.slice(1);
-    });
-    return out;
+    const q = queueRef.current;
+    if (q.length === 0) return null;
+    const head = q[0] ?? null;
+    const rest = q.slice(1);
+    queueRef.current = rest;
+    setReceiptQueue(rest);
+    return head;
   }, []);
 
-  const clearReceiptQueue = useCallback(() => setReceiptQueue([]), []);
+  const clearReceiptQueue = useCallback(() => {
+    queueRef.current = [];
+    setReceiptQueue([]);
+  }, []);
 
   const value = useMemo(
     () => ({

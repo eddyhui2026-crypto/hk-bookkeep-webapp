@@ -8,7 +8,7 @@ import { useI18n } from "@/components/I18nProvider";
 import { SITE_URL } from "@/lib/env";
 import { useMarket } from "@/components/MarketProvider";
 import { getSiteName } from "@/lib/market";
-import { isAllowedOauthReturnOriginOrLocalhost } from "@/lib/oauth-return-origin";
+import { shouldPrepareOauthForHostname } from "@/lib/oauth-return-origin";
 
 export function LoginForm() {
   const market = useMarket();
@@ -37,7 +37,7 @@ export function LoginForm() {
     setInfoMsg(null);
     if (
       typeof window !== "undefined" &&
-      isAllowedOauthReturnOriginOrLocalhost(window.location.origin)
+      shouldPrepareOauthForHostname(window.location.hostname)
     ) {
       await fetch(`${window.location.origin}/api/auth/prepare-oauth`, {
         method: "POST",

@@ -433,6 +433,8 @@ export const hkMessages = {
       receiptQueueBacklog: "隊列仲有 {n} 張相等緊（提交本筆後會自動開下一張）。",
       receiptQueueFull: "隊列已滿（最多 {max} 張）。請先入數或將瀏覽器分頁保持喺概覽。",
       receiptCameraUnnamed: "（相機相片）",
+      receiptFileRejected:
+        "偵測唔到係圖片檔（手機相機有時冇 MIME）。請再試影相，或用「選擇檔案」從相簿揀 JPG／PNG。",
       errReceiptBig: "收據檔案仍然太大",
       errFail: "失敗",
       errDelete: "刪除失敗",
@@ -973,6 +975,8 @@ export const hkMessages = {
       receiptQueueBacklog: "{n} more in queue (after you submit, the next one opens automatically).",
       receiptQueueFull: "Queue is full ({max} max). Enter a few receipts first or keep this tab on the overview.",
       receiptCameraUnnamed: "(Camera photo)",
+      receiptFileRejected:
+        "Couldn’t detect an image—some phones omit the file type after the camera. Try again or pick JPG/PNG from your library under the form.",
       errReceiptBig: "Receipt file is still too large",
       errFail: "Something went wrong",
       errDelete: "Delete failed",

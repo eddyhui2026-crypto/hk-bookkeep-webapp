@@ -1,12 +1,18 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import { getAllArticlesMeta } from "@/lib/articles/load";
-import { getMarketFromEnv } from "@/lib/market";
-import { SITE_URL } from "@/lib/env";
+import { getMarketFromEnv, marketFromHost } from "@/lib/market";
+import { getRequestSiteUrl } from "@/lib/request-site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const articles = getAllArticlesMeta(getMarketFromEnv());
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
+  const market = marketFromHost(host) ?? getMarketFromEnv();
+  const base = await getRequestSiteUrl();
+
+  const articles = getAllArticlesMeta(market);
   const articleEntries: MetadataRoute.Sitemap = articles.map((a) => ({
-    url: `${SITE_URL}/articles/${a.slug}`,
+    url: `${base}/articles/${a.slug}`,
     lastModified: new Date(a.dateModified ?? a.datePublished),
     changeFrequency: "monthly",
     priority: 0.75,
@@ -15,36 +21,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const last = new Date();
 
   return [
-    { url: SITE_URL, lastModified: last, changeFrequency: "weekly", priority: 1 },
+    { url: base, lastModified: last, changeFrequency: "weekly", priority: 1 },
     {
-      url: `${SITE_URL}/articles`,
+      url: `${base}/articles`,
       lastModified: last,
       changeFrequency: "weekly",
       priority: 0.85,
     },
-    { url: `${SITE_URL}/tools`, lastModified: last, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/tools`, lastModified: last, changeFrequency: "monthly", priority: 0.8 },
     {
-      url: `${SITE_URL}/tools/profits-tax-estimator`,
+      url: `${base}/tools/profits-tax-estimator`,
       lastModified: last,
       changeFrequency: "monthly",
       priority: 0.65,
     },
     {
-      url: `${SITE_URL}/tools/freelance-rate`,
+      url: `${base}/tools/freelance-rate`,
       lastModified: last,
       changeFrequency: "monthly",
       priority: 0.65,
     },
     {
-      url: `${SITE_URL}/tools/ad-spend-ratio`,
+      url: `${base}/tools/ad-spend-ratio`,
       lastModified: last,
       changeFrequency: "monthly",
       priority: 0.65,
     },
-    { url: `${SITE_URL}/contact`, lastModified: last, changeFrequency: "yearly", priority: 0.5 },
-    { url: `${SITE_URL}/terms`, lastModified: last, changeFrequency: "yearly", priority: 0.35 },
-    { url: `${SITE_URL}/privacy`, lastModified: last, changeFrequency: "yearly", priority: 0.35 },
-    { url: `${SITE_URL}/login`, lastModified: last, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${base}/contact`, lastModified: last, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${base}/terms`, lastModified: last, changeFrequency: "yearly", priority: 0.35 },
+    { url: `${base}/privacy`, lastModified: last, changeFrequency: "yearly", priority: 0.35 },
+    { url: `${base}/login`, lastModified: last, changeFrequency: "monthly", priority: 0.4 },
     ...articleEntries,
   ];
 }

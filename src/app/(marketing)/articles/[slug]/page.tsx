@@ -7,7 +7,7 @@ import {
 } from "@/lib/articles/load";
 import { getSiteName } from "@/lib/market";
 import { getMarket } from "@/lib/market-server";
-import { SITE_URL } from "@/lib/env";
+import { getRequestSiteUrl } from "@/lib/request-site";
 
 export function generateStaticParams() {
   return getArticleSlugsForBuild().map((slug) => ({ slug }));
@@ -25,7 +25,8 @@ export async function generateMetadata({
   const article = getArticleBySlug(market, slug);
   if (!article) return { title: "文章" };
 
-  const url = `${SITE_URL}/articles/${article.slug}`;
+  const siteUrl = await getRequestSiteUrl();
+  const url = `${siteUrl}/articles/${article.slug}`;
   return {
     title: article.title,
     description: article.description,
@@ -54,6 +55,7 @@ export default async function ArticlePage({
   const article = getArticleBySlug(market, slug);
   if (!article) notFound();
 
+  const siteUrl = await getRequestSiteUrl();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -64,14 +66,17 @@ export default async function ArticlePage({
     author: {
       "@type": "Organization",
       name: site,
-      url: SITE_URL,
+      url: siteUrl,
     },
     publisher: {
       "@type": "Organization",
       name: site,
-      url: SITE_URL,
+      url: siteUrl,
     },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/articles/${article.slug}` },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteUrl}/articles/${article.slug}`,
+    },
   };
 
   return (

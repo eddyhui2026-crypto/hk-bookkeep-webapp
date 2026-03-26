@@ -28,6 +28,16 @@ export function isAllowedOauthReturnOriginOrLocalhost(origin: string): boolean {
   }
 }
 
+/**
+ * 撳 Google 前先 call prepare-oauth：以 hostname 判斷，唔依賴 `new URL(origin)`，
+ * 避免少數 Android WebView／異常 origin 字串令 `isAllowedOauthReturnOriginOrLocalhost` 誤判而跳過設 cookie。
+ */
+export function shouldPrepareOauthForHostname(hostname: string): boolean {
+  const h = hostname.split(":")[0]?.toLowerCase() ?? "";
+  if (h === "localhost" || h === "127.0.0.1") return true;
+  return /^[a-z0-9-]+bookkeep\.harbix\.app$/.test(h);
+}
+
 export function stripTrailingSlash(u: string): string {
   return u.replace(/\/$/, "");
 }

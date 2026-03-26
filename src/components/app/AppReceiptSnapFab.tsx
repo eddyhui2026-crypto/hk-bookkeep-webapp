@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import { useAppSnap } from "@/components/app/AppSnapContext";
 import { RECEIPT_SNAP_QUEUE_MAX } from "@/lib/constants";
+import { isLikelyReceiptImageFile } from "@/lib/receipt-file";
 
 function CameraGlyph({ className }: { className: string }) {
   return (
@@ -51,7 +52,11 @@ export function AppReceiptSnapFab() {
   const targetLedger = urlLedger ?? defaultLedgerId;
 
   const onFile = (f: File | null) => {
-    if (!f || !f.type.startsWith("image/")) return;
+    if (!f) return;
+    if (!isLikelyReceiptImageFile(f)) {
+      setFabErr(t("dashboard.receiptFileRejected"));
+      return;
+    }
     if (!enqueueReceipt(f)) {
       setFabErr(t("dashboard.receiptQueueFull", { max: RECEIPT_SNAP_QUEUE_MAX }));
       return;

@@ -30,6 +30,7 @@ import {
 import { categoriesForMarketSelect } from "@/lib/categories-ui";
 import { currentTaxYearStart } from "@/lib/reports";
 import { useAppSnap } from "@/components/app/AppSnapContext";
+import { isLikelyReceiptImageFile } from "@/lib/receipt-file";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { LedgerFxRatesForm } from "@/components/dashboard/LedgerFxRatesForm";
 import type { TxForChart } from "@/lib/dashboard-chart-data";
@@ -99,7 +100,7 @@ export function DashboardClient({
   const { locale, t } = useI18n();
   const market = useMarket();
   const currencyOptions = currenciesOrderedForMarket(market);
-  const { receiptQueue, dequeueReceipt } = useAppSnap();
+  const { receiptQueue, dequeueReceipt, snapEnabled } = useAppSnap();
   const receiptQueueBacklog = receiptQueue.length;
   const colon = locale === "zh" ? "：" : ": ";
   const router = useRouter();
@@ -184,9 +185,9 @@ export function DashboardClient({
     requestAnimationFrame(() => {
       quickAddRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: "start",
       });
-      window.setTimeout(() => amountInputRef.current?.focus(), 350);
+      window.setTimeout(() => amountInputRef.current?.focus(), 400);
     });
   }, [activeLedgerId, file, receiptQueueBacklog, dequeueReceipt]);
 
@@ -366,7 +367,7 @@ export function DashboardClient({
           txDate,
         });
 
-        if (file && file.type.startsWith("image/")) {
+        if (file && isLikelyReceiptImageFile(file)) {
           const blob = await compressImageToJpeg(file);
           if (blob.size > RECEIPT_MAX_BYTES) {
             setErr(t("dashboard.errReceiptBig"));
@@ -547,7 +548,13 @@ export function DashboardClient({
     trialDays > 0;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+    <div
+      className={`mx-auto max-w-5xl space-y-6 px-4 py-8 ${
+        snapEnabled && activeLedgerId && canWrite && !readOnly
+          ? "pb-[max(8rem,calc(6rem+env(safe-area-inset-bottom,0px)))]"
+          : ""
+      }`}
+    >
       {readOnly && (
         <div className="rounded-xl border border-brand/30 bg-brand/5 px-4 py-3 text-sm text-foreground">
           <strong>{t("dashboard.readOnlyTitle")}</strong>
@@ -921,7 +928,7 @@ export function DashboardClient({
           ref={quickAddRef}
           id="dashboard-quick-add"
           onSubmit={onSubmit}
-          className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+          className="scroll-mt-6 space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
         >
           <h2 className="text-sm font-medium text-foreground">
             {t("dashboard.quickAdd")}
