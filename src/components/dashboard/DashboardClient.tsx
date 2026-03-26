@@ -13,11 +13,13 @@ import {
   deleteTransaction,
   renameLedger,
   softDeleteLedger,
+  updateTransaction,
   updateTransactionCategory,
 } from "@/app/app/actions";
 import { createClient } from "@/lib/supabase/client";
 import { compressImageToJpeg } from "@/lib/image-compress";
 import {
+  CURRENCIES,
   CATEGORY_MAX_PER_LEDGER,
   currenciesOrderedForMarket,
   defaultCurrencyForMarket,
@@ -112,6 +114,16 @@ export function DashboardClient({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
+  const [txQuery, setTxQuery] = useState("");
+  const [txFilterCategory, setTxFilterCategory] = useState<string>("");
+  const [editingTxId, setEditingTxId] = useState<string | null>(null);
+  const [editType, setEditType] = useState<"income" | "expense">("expense");
+  const [editAmount, setEditAmount] = useState("");
+  const [editCurrency, setEditCurrency] = useState<CurrencyCode>(() =>
+    defaultCurrencyForMarket(market)
+  );
+  const [editDate, setEditDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [editNote, setEditNote] = useState("");
 
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState<CurrencyCode>(() =>
@@ -458,6 +470,48 @@ export function DashboardClient({
     });
   }
 
+  function beginEditTx(tx: Tx) {
+    setEditingTxId(tx.id);
+    setEditType(tx.type === "income" ? "income" : "expense");
+    setEditAmount(String(tx.amount));
+    setEditCurrency(
+      CURRENCIES.includes(tx.currency as CurrencyCode)
+        ? (tx.currency as CurrencyCode)
+        : defaultCurrencyForMarket(market)
+    );
+    setEditDate(tx.tx_date);
+    setEditNote(tx.note ?? "");
+  }
+
+  function cancelEditTx() {
+    setEditingTxId(null);
+  }
+
+  function saveEditTx(transactionId: string) {
+    if (!canWrite) return;
+    const amt = Number(editAmount);
+    if (!Number.isFinite(amt) || amt < 0) {
+      setErr(t("dashboard.errAmount"));
+      return;
+    }
+    startTransition(async () => {
+      try {
+        await updateTransaction({
+          transactionId,
+          type: editType,
+          amount: amt,
+          currency: editCurrency,
+          txDate: editDate,
+          note: editNote,
+        });
+        setEditingTxId(null);
+        router.refresh();
+      } catch (x) {
+        setErr(x instanceof Error ? x.message : t("dashboard.errFail"));
+      }
+    });
+  }
+
   async function onCreateLedger(template?: "freelance" | "shop") {
     if (!canWrite) return;
     setErr(null);
@@ -582,6 +636,24 @@ export function DashboardClient({
   const incomeLabel = t("dashboard.income");
   const expenseLabel = t("dashboard.expense");
   const categoryRemaining = Math.max(0, CATEGORY_MAX_PER_LEDGER - categories.length);
+  const filteredTransactions = useMemo(() => {
+    const q = txQuery.trim().toLowerCase();
+    return transactions.filter((tx) => {
+      if (txFilterCategory && (tx.category_id ?? "") !== txFilterCategory) return false;
+      if (!q) return true;
+      const cat = transactionCategoryLabel(tx) ?? "";
+      const haystack = [
+        tx.note ?? "",
+        cat,
+        tx.currency,
+        String(tx.amount),
+        tx.tx_date,
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [transactions, txFilterCategory, txQuery, categories, locale]);
   const trialDays = appTrialDaysRemaining(trialEndsAt);
   const showTrialHint =
     canWrite &&
@@ -648,7 +720,7 @@ export function DashboardClient({
           <div>
             <a
               className="inline-flex rounded-full border border-border px-3 py-1.5 hover:bg-brand/10"
-              href={`/api/reports/csv?${reportQs}`}
+              href={`/api/reports/csv?${reportQs}&locale=${locale}`}
             >
               {t("dashboard.exportCsv")}
             </a>
@@ -656,7 +728,7 @@ export function DashboardClient({
           <div>
             <a
               className="inline-flex rounded-full border border-border px-3 py-1.5 hover:bg-brand/10"
-              href={`/app/reports/print?${reportQs}`}
+              href={`/app/reports/print?${reportQs}&locale=${locale}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -690,7 +762,7 @@ export function DashboardClient({
                 <div>
                   <a
                     className="inline-flex rounded-full border border-border px-3 py-1.5 hover:bg-brand/10"
-                    href={`/app/reports/tax-summary/print?${taxSummaryQs}`}
+              href={`/app/reports/tax-summary/print?${taxSummaryQs}&locale=${locale}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -1173,13 +1245,35 @@ export function DashboardClient({
         <h2 className="text-sm font-medium text-foreground">
           {t("dashboard.recent")}
         </h2>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <input
+            className="rounded-lg border border-border px-3 py-2 text-sm"
+            placeholder={t("dashboard.txSearchPh")}
+            value={txQuery}
+            onChange={(e) => setTxQuery(e.target.value)}
+          />
+          <select
+            className="rounded-lg border border-border px-3 py-2 text-sm"
+            value={txFilterCategory}
+            onChange={(e) => setTxFilterCategory(e.target.value)}
+          >
+            <option value="">{t("dashboard.txFilterAllCategories")}</option>
+            {categoriesForMarketSelect(categories, market, undefined).map((c) => (
+              <option key={c.id} value={c.id}>
+                {categoryLabel(t, c)}
+              </option>
+            ))}
+          </select>
+        </div>
         <ul className="mt-3 divide-y divide-border">
-          {transactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <li className="py-6 text-center text-sm text-muted">
-              {t("dashboard.noRecords")}
+              {transactions.length === 0
+                ? t("dashboard.noRecords")
+                : t("dashboard.noRecordsFiltered")}
             </li>
           ) : (
-            transactions.map((tx) => {
+            filteredTransactions.map((tx) => {
               const catLabel = !canWrite ? transactionCategoryLabel(tx) : null;
               return (
               <li
@@ -1256,6 +1350,75 @@ export function DashboardClient({
                     >
                       {t("dashboard.delete")}
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => beginEditTx(tx)}
+                      disabled={pending}
+                      className="text-xs text-brand hover:underline disabled:opacity-50"
+                    >
+                      {t("dashboard.edit")}
+                    </button>
+                  </div>
+                )}
+                {canWrite && editingTxId === tx.id && (
+                  <div className="mt-2 w-full rounded-lg border border-border bg-muted/20 p-3">
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                      <input
+                        value={editAmount}
+                        onChange={(e) => setEditAmount(e.target.value)}
+                        inputMode="decimal"
+                        className="rounded-lg border border-border px-2 py-1.5 text-xs"
+                      />
+                      <select
+                        value={editCurrency}
+                        onChange={(e) => setEditCurrency(e.target.value as CurrencyCode)}
+                        className="rounded-lg border border-border px-2 py-1.5 text-xs"
+                      >
+                        {currencyOptions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="date"
+                        value={editDate}
+                        onChange={(e) => setEditDate(e.target.value)}
+                        className="rounded-lg border border-border px-2 py-1.5 text-xs"
+                      />
+                      <select
+                        value={editType}
+                        onChange={(e) =>
+                          setEditType(e.target.value === "income" ? "income" : "expense")
+                        }
+                        className="rounded-lg border border-border px-2 py-1.5 text-xs"
+                      >
+                        <option value="expense">{t("dashboard.typeExpense")}</option>
+                        <option value="income">{t("dashboard.typeIncome")}</option>
+                      </select>
+                      <input
+                        value={editNote}
+                        onChange={(e) => setEditNote(e.target.value)}
+                        placeholder={t("dashboard.notePh")}
+                        className="rounded-lg border border-border px-2 py-1.5 text-xs lg:col-span-1"
+                      />
+                    </div>
+                    <div className="mt-2 flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={cancelEditTx}
+                        className="rounded-lg border border-border px-3 py-1.5 text-xs"
+                      >
+                        {t("dashboard.cancelEdit")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => saveEditTx(tx.id)}
+                        className="rounded-lg bg-brand px-3 py-1.5 text-xs text-white"
+                      >
+                        {t("dashboard.saveEdit")}
+                      </button>
+                    </div>
                   </div>
                 )}
               </li>

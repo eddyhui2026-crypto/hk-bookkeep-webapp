@@ -3,20 +3,22 @@ import { redirect } from "next/navigation";
 import { TaxSummaryPrintBody } from "@/components/reports/TaxSummaryPrintBody";
 import { fetchLedgerTaxSummaryForPrint } from "@/lib/ledger-tax-summary-print";
 import { getMarket } from "@/lib/market-server";
+import type { Locale } from "@/lib/i18n/messages";
 
 export const dynamic = "force-dynamic";
 
 export default async function TaxSummaryPrintPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ledgerId?: string; taxYear?: string }>;
+  searchParams: Promise<{ ledgerId?: string; taxYear?: string; locale?: string }>;
 }) {
   const sp = await searchParams;
   const ledgerId = sp.ledgerId ?? "";
   const taxYear = Number(sp.taxYear);
+  const locale: Locale = sp.locale === "en" ? "en" : "zh";
 
   const market = await getMarket();
-  const result = await fetchLedgerTaxSummaryForPrint(ledgerId, taxYear, market);
+  const result = await fetchLedgerTaxSummaryForPrint(ledgerId, taxYear, market, locale);
 
   if (!result.ok) {
     if (result.status === 401) {
@@ -29,7 +31,7 @@ export default async function TaxSummaryPrintPage({
           href="/app"
           className="mt-4 inline-block text-sm text-brand underline"
         >
-          返回概覽
+          {locale === "en" ? "Back to overview" : "返回概覽"}
         </Link>
       </div>
     );

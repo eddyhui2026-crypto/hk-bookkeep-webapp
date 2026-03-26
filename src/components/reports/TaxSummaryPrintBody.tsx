@@ -16,9 +16,19 @@ function formatMoney(n: number, numLocale: string): string {
 export function TaxSummaryPrintBody({ data }: { data: TaxSummaryPayload }) {
   const { locale, t } = useI18n();
   const numLocale = locale === "en" ? "en-HK" : "zh-HK";
+  const periodLabel =
+    locale === "en"
+      ? `${data.periodStart} to ${data.periodEnd}`
+      : `${data.periodStart} 至 ${data.periodEnd}`;
 
-  const catLabel = (name: string) =>
-    name.trim() ? name : t("dashboard.uncategorized");
+  const catLabel = (name: string, slug: string | null) => {
+    if (slug) {
+      const key = `catalog.${slug}`;
+      const hit = t(key);
+      if (hit !== key) return hit;
+    }
+    return name.trim() ? name : t("dashboard.uncategorized");
+  };
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 text-foreground print:max-w-none print:px-6 print:py-4">
@@ -45,7 +55,7 @@ export function TaxSummaryPrintBody({ data }: { data: TaxSummaryPayload }) {
           {t("printReport.docTitle")} — {data.ledgerName}
         </p>
         <p className="mt-1 text-sm text-muted">
-          {t("taxSummary.period")}: {data.periodLabel}
+          {t("taxSummary.period")}: {periodLabel}
         </p>
         <p className="text-sm text-muted">
           {t("printReport.exportedAt")}: {data.exportedAt} ({t("printReport.hkTime")})
@@ -88,11 +98,11 @@ export function TaxSummaryPrintBody({ data }: { data: TaxSummaryPayload }) {
               ) : (
                 data.incomeLines.map((r, i) => (
                   <tr
-                    key={`i-${r.category}-${r.currency}-${i}`}
+                    key={`i-${r.category_name}-${r.currency}-${i}`}
                     className="even:bg-muted/30 print:even:bg-gray-50"
                   >
                     <td className="border border-border px-2 py-1.5">
-                      {catLabel(r.category)}
+                      {catLabel(r.category_name, r.category_slug)}
                     </td>
                     <td className="border border-border px-2 py-1.5">{r.currency}</td>
                     <td className="border border-border px-2 py-1.5 text-right tabular-nums text-income print:text-black">
@@ -138,11 +148,11 @@ export function TaxSummaryPrintBody({ data }: { data: TaxSummaryPayload }) {
               ) : (
                 data.expenseLines.map((r, i) => (
                   <tr
-                    key={`e-${r.category}-${r.currency}-${i}`}
+                    key={`e-${r.category_name}-${r.currency}-${i}`}
                     className="even:bg-muted/30 print:even:bg-gray-50"
                   >
                     <td className="border border-border px-2 py-1.5">
-                      {catLabel(r.category)}
+                      {catLabel(r.category_name, r.category_slug)}
                     </td>
                     <td className="border border-border px-2 py-1.5">{r.currency}</td>
                     <td className="border border-border px-2 py-1.5 text-right tabular-nums text-expense print:text-black">

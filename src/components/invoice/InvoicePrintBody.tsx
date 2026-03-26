@@ -35,7 +35,13 @@ export function InvoicePrintBody({
   const hasContact = Boolean(contactEmail || contactPhone);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 text-foreground print:max-w-none print:px-8 print:py-6">
+    <div className="mx-auto max-w-2xl px-4 py-6 text-foreground print:max-w-none print:px-0 print:py-0">
+      <style jsx global>{`
+        @page {
+          size: A4 portrait;
+          margin: 12mm;
+        }
+      `}</style>
       <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-border pb-4 print:hidden">
         <Link
           href="/app/invoices"
@@ -55,6 +61,7 @@ export function InvoicePrintBody({
         </p>
       </div>
 
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-sm print:rounded-none print:border-0 print:bg-transparent print:p-0 print:shadow-none">
       <header className="mb-6 border-b border-border pb-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -155,6 +162,7 @@ export function InvoicePrintBody({
           </div>
         ) : null}
       </dl>
+      </div>
     </div>
   );
 }

@@ -34,6 +34,7 @@ const U = {
     "不支援的幣別",
     "Currency not supported.",
   ],
+  invalidAmount: ["請輸入有效金額", "請輸入有效金額", "Enter a valid amount."],
   txNotFound: ["找不到交易", "找不到交易", "Transaction not found."],
   categorySameLedger: [
     "分類必須屬於同一本生意簿",

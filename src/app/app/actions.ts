@@ -272,6 +272,40 @@ export async function deleteTransaction(transactionId: string) {
   revalidatePath("/app");
 }
 
+export async function updateTransaction(input: {
+  transactionId: string;
+  type: "income" | "expense";
+  amount: number;
+  currency: string;
+  txDate: string;
+  note: string;
+}) {
+  const { userId, market } = await requireWrite();
+  const supabase = await createClient();
+
+  if (!CURRENCIES.includes(input.currency as CurrencyCode)) {
+    throw new Error(serverActionUiMessage(market, "currencyUnsupported"));
+  }
+  if (!Number.isFinite(input.amount) || input.amount < 0) {
+    throw new Error(serverActionUiMessage(market, "invalidAmount"));
+  }
+
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      type: input.type,
+      amount: input.amount,
+      currency: input.currency,
+      tx_date: input.txDate,
+      note: input.note.trim() || null,
+    })
+    .eq("id", input.transactionId)
+    .eq("user_id", userId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/app");
+}
+
 export async function addCategory(ledgerId: string, name: string, color: string) {
   const { userId, market } = await requireWrite();
   const trimmed = name.trim();

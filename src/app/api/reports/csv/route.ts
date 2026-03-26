@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { monthBounds, yearBounds } from "@/lib/reports";
+import { getMarketFromEnv, marketFromHost } from "@/lib/market";
+import { getMessageTree } from "@/lib/i18n/get-message-tree";
+import type { Locale } from "@/lib/i18n/messages";
+import { translate } from "@/lib/i18n/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -9,9 +13,18 @@ export async function GET(request: Request) {
   const ledgerId = searchParams.get("ledgerId");
   const year = Number(searchParams.get("year"));
   const month = searchParams.get("month");
+  const localeRaw = searchParams.get("locale");
+  const locale: Locale = localeRaw === "en" ? "en" : "zh";
+  const host = new URL(request.url).host;
+  const market = marketFromHost(host) ?? getMarketFromEnv();
+  const tree = getMessageTree(market, locale);
+  const tr = (k: string) => translate(tree, k);
 
   if (!ledgerId || !Number.isFinite(year)) {
-    return NextResponse.json({ error: "缺少 ledgerId 或 year" }, { status: 400 });
+    return NextResponse.json(
+      { error: locale === "en" ? "Missing ledgerId or year" : "缺少 ledgerId 或 year" },
+      { status: 400 }
+    );
   }
 
   const supabase = await createClient();
@@ -19,7 +32,10 @@ export async function GET(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "未登入" }, { status: 401 });
+    return NextResponse.json(
+      { error: locale === "en" ? "Unauthenticated" : "未登入" },
+      { status: 401 }
+    );
   }
 
   const { data: ledger, error: le } = await supabase
@@ -30,7 +46,10 @@ export async function GET(request: Request) {
     .maybeSingle();
 
   if (le || !ledger) {
-    return NextResponse.json({ error: "找不到生意簿" }, { status: 404 });
+    return NextResponse.json(
+      { error: locale === "en" ? "Ledger not found" : "找不到生意簿" },
+      { status: 404 }
+    );
   }
 
   const range =
@@ -51,19 +70,41 @@ export async function GET(request: Request) {
   }
 
   const catIds = [...new Set((txs ?? []).map((t) => t.category_id).filter(Boolean))] as string[];
-  const catMap = new Map<string, string>();
+  const catMap = new Map<string, { name: string; slug: string | null }>();
   if (catIds.length) {
-    const { data: cats } = await supabase.from("categories").select("id, name").in("id", catIds);
-    for (const c of cats ?? []) catMap.set(c.id, c.name);
+    const { data: cats } = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .in("id", catIds);
+    for (const c of cats ?? []) catMap.set(c.id, { name: c.name, slug: c.slug ?? null });
   }
 
+  const categoryLabel = (name: string, slug: string | null) => {
+    if (slug) {
+      const key = `catalog.${slug}`;
+      const hit = tr(key);
+      if (hit !== key) return hit;
+    }
+    return name;
+  };
+
   const rows: string[][] = [
-    ["日期", "類型", "金額", "幣種", "分類", "備註"],
+    [
+      tr("printReport.colDate"),
+      locale === "en" ? "Type" : "類型",
+      locale === "en" ? "Amount" : "金額",
+      tr("printReport.colCurrency"),
+      tr("printReport.colCategory"),
+      tr("printReport.colNote"),
+    ],
     ...(txs ?? []).map((t) => {
-      const cat = t.category_id ? catMap.get(t.category_id) ?? "" : "";
+      const catRec = t.category_id ? catMap.get(t.category_id) : undefined;
+      const cat = catRec ? categoryLabel(catRec.name, catRec.slug) : "";
       return [
         t.tx_date,
-        t.type === "income" ? "收入" : "支出",
+        t.type === "income"
+          ? tr("dashboard.income")
+          : tr("dashboard.expense"),
         String(t.amount),
         t.currency,
         cat,

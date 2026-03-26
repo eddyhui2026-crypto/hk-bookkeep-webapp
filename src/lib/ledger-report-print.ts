@@ -8,7 +8,8 @@ export type PrintReportRow = {
   type: "income" | "expense";
   amount: number;
   currency: string;
-  category: string;
+  category_name: string;
+  category_slug: string | null;
   note: string;
 };
 
@@ -21,7 +22,8 @@ export type PrintReportTotal = {
 
 export type PrintReportPayload = {
   ledgerName: string;
-  periodLabel: string;
+  year: number;
+  month: number | null;
   exportedAt: string;
   rows: PrintReportRow[];
   totals: PrintReportTotal[];
@@ -77,17 +79,14 @@ export async function fetchLedgerReportForPrint(
   }
 
   let range: { start: string; end: string };
-  let periodLabel: string;
   if (monthParam && monthParam !== "all") {
     const m = Number(monthParam);
     if (!Number.isInteger(m) || m < 1 || m > 12) {
       return { ok: false, status: 400, message: "月份須為 1–12" };
     }
     range = monthBounds(year, m);
-    periodLabel = `${year} 年 ${m} 月`;
   } else {
     range = yearBounds(year);
-    periodLabel = `${year} 年(全年)`;
   }
 
   const { data: txs, error: te } = await supabase
@@ -108,13 +107,13 @@ export async function fetchLedgerReportForPrint(
   const truncated = raw.length >= REPORT_PRINT_ROW_LIMIT;
 
   const catIds = [...new Set(raw.map((t) => t.category_id).filter(Boolean))] as string[];
-  const catMap = new Map<string, string>();
+  const catMap = new Map<string, { name: string; slug: string | null }>();
   if (catIds.length) {
     const { data: cats } = await supabase
       .from("categories")
-      .select("id, name")
+      .select("id, name, slug")
       .in("id", catIds);
-    for (const c of cats ?? []) catMap.set(c.id, c.name);
+    for (const c of cats ?? []) catMap.set(c.id, { name: c.name, slug: c.slug ?? null });
   }
 
   const chronological = [...raw].reverse();
@@ -124,7 +123,8 @@ export async function fetchLedgerReportForPrint(
     type: t.type === "income" ? "income" : "expense",
     amount: Number(t.amount),
     currency: t.currency,
-    category: t.category_id ? (catMap.get(t.category_id) ?? "") : "",
+    category_name: t.category_id ? (catMap.get(t.category_id)?.name ?? "") : "",
+    category_slug: t.category_id ? (catMap.get(t.category_id)?.slug ?? null) : null,
     note: (t.note ?? "").replace(/\r?\n/g, " ").trim(),
   }));
 
@@ -148,7 +148,8 @@ export async function fetchLedgerReportForPrint(
     ok: true,
     data: {
       ledgerName: ledger.name,
-      periodLabel,
+      year,
+      month: monthParam && monthParam !== "all" ? Number(monthParam) : null,
       exportedAt: exportTimestampHK(),
       rows,
       totals,

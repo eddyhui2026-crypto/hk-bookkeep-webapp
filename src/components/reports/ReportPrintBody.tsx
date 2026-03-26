@@ -16,6 +16,25 @@ function formatMoney(n: number, numLocale: string): string {
 export function ReportPrintBody({ data }: { data: PrintReportPayload }) {
   const { locale, t } = useI18n();
   const numLocale = locale === "en" ? "en-HK" : "zh-HK";
+  const periodLabel =
+    data.month === null
+      ? locale === "en"
+        ? `${data.year} (Full year)`
+        : `${data.year} 年（全年）`
+      : locale === "en"
+        ? `${new Intl.DateTimeFormat("en", { month: "long" }).format(
+            new Date(data.year, data.month - 1, 1)
+          )} ${data.year}`
+        : `${data.year} 年 ${data.month} 月`;
+
+  const categoryLabel = (name: string, slug: string | null) => {
+    if (slug) {
+      const key = `catalog.${slug}`;
+      const hit = t(key);
+      if (hit !== key) return hit;
+    }
+    return name || "—";
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 text-foreground print:max-w-none print:px-6 print:py-4">
@@ -41,7 +60,7 @@ export function ReportPrintBody({ data }: { data: PrintReportPayload }) {
           {t("printReport.docTitle")} — {data.ledgerName}
         </h1>
         <p className="mt-1 text-sm text-muted">
-          {t("printReport.period")}: {data.periodLabel}
+          {t("printReport.period")}: {periodLabel}
         </p>
         <p className="text-sm text-muted">
           {t("printReport.exportedAt")}: {data.exportedAt} ({t("printReport.hkTime")})
@@ -105,7 +124,9 @@ export function ReportPrintBody({ data }: { data: PrintReportPayload }) {
                       : "—"}
                   </td>
                   <td className="border border-border px-2 py-1.5">{r.currency}</td>
-                  <td className="border border-border px-2 py-1.5">{r.category || "—"}</td>
+                  <td className="border border-border px-2 py-1.5">
+                    {categoryLabel(r.category_name, r.category_slug)}
+                  </td>
                   <td className="border border-border px-2 py-1.5 break-words max-w-[14rem] print:max-w-none">
                     {r.note || ""}
                   </td>

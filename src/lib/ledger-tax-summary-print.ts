@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Market } from "@/lib/market";
 import { taxPeriodForExport } from "@/lib/reports";
+import type { Locale } from "@/lib/i18n/messages";
 
 export type TaxSummaryLine = {
-  category: string;
+  category_name: string;
+  category_slug: string | null;
   currency: string;
   amount: number;
 };
@@ -49,15 +51,23 @@ function exportTimestampHK(): string {
 export async function fetchLedgerTaxSummaryForPrint(
   ledgerId: string,
   exportYearKey: number,
-  market: Market
+  market: Market,
+  locale: Locale = "zh"
 ): Promise<TaxSummaryFetchResult> {
+  const zh = locale === "zh";
   if (
     !ledgerId ||
     !Number.isInteger(exportYearKey) ||
     exportYearKey < 2000 ||
     exportYearKey > 2100
   ) {
-    return { ok: false, status: 400, message: "缺少 ledgerId 或有效 taxYear" };
+    return {
+      ok: false,
+      status: 400,
+      message: zh
+        ? "缺少 ledgerId 或有效 taxYear"
+        : "Missing ledgerId or valid taxYear",
+    };
   }
 
   const range = taxPeriodForExport(market, exportYearKey);
@@ -67,15 +77,19 @@ export async function fetchLedgerTaxSummaryForPrint(
       : String(exportYearKey);
   const periodLabel =
     market === "hk"
-      ? `${taxYearLabel}（${range.start} 至 ${range.end}）`
-      : `${exportYearKey}（${range.start} 至 ${range.end}）`;
+      ? zh
+        ? `${taxYearLabel}（${range.start} 至 ${range.end}）`
+        : `${taxYearLabel} (${range.start} to ${range.end})`
+      : zh
+        ? `${exportYearKey}（${range.start} 至 ${range.end}）`
+        : `${exportYearKey} (${range.start} to ${range.end})`;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { ok: false, status: 401, message: "未登入" };
+    return { ok: false, status: 401, message: zh ? "未登入" : "Not signed in." };
   }
 
   const { data: ledger, error: le } = await supabase
@@ -86,7 +100,7 @@ export async function fetchLedgerTaxSummaryForPrint(
     .maybeSingle();
 
   if (le || !ledger) {
-    return { ok: false, status: 404, message: "找不到生意簿" };
+    return { ok: false, status: 404, message: zh ? "找不到生意簿" : "Ledger not found." };
   }
 
   const { data: txs, error: te } = await supabase
@@ -102,19 +116,24 @@ export async function fetchLedgerTaxSummaryForPrint(
 
   const raw = txs ?? [];
   const catIds = [...new Set(raw.map((t) => t.category_id).filter(Boolean))] as string[];
-  const catMap = new Map<string, string>();
+  const catMap = new Map<string, { name: string; slug: string | null }>();
   if (catIds.length) {
-    const { data: cats } = await supabase.from("categories").select("id, name").in("id", catIds);
-    for (const c of cats ?? []) catMap.set(c.id, c.name);
+    const { data: cats } = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .in("id", catIds);
+    for (const c of cats ?? []) catMap.set(c.id, { name: c.name, slug: c.slug ?? null });
   }
 
   const incMap = new Map<string, number>();
   const expMap = new Map<string, number>();
 
   for (const t of raw) {
-    const cat = t.category_id ? (catMap.get(t.category_id) ?? "") : "";
+    const cat = t.category_id
+      ? (catMap.get(t.category_id) ?? { name: "", slug: null })
+      : { name: "", slug: null };
     const cur = t.currency || "HKD";
-    const key = `${cat}\0${cur}`;
+    const key = `${cat.name}\0${cat.slug ?? ""}\0${cur}`;
     const amt = Number(t.amount);
     if (t.type === "income") {
       incMap.set(key, (incMap.get(key) ?? 0) + amt);
@@ -126,13 +145,18 @@ export async function fetchLedgerTaxSummaryForPrint(
   const lineFromMap = (m: Map<string, number>): TaxSummaryLine[] =>
     [...m.entries()]
       .map(([key, amount]) => {
-        const [category, currency] = key.split("\0");
-        return { category, currency, amount };
+        const [category_name, category_slug, currency] = key.split("\0");
+        return {
+          category_name,
+          category_slug: category_slug || null,
+          currency,
+          amount,
+        };
       })
       .filter((l) => l.amount !== 0)
       .sort((a, b) =>
-        a.category !== b.category
-          ? a.category.localeCompare(b.category, "zh-HK")
+        a.category_name !== b.category_name
+          ? a.category_name.localeCompare(b.category_name, zh ? "zh-HK" : "en")
           : a.currency.localeCompare(b.currency)
       );
 
