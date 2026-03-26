@@ -8,7 +8,10 @@ import { useI18n } from "@/components/I18nProvider";
 import { SITE_URL } from "@/lib/env";
 import { useMarket } from "@/components/MarketProvider";
 import { getSiteName } from "@/lib/market";
-import { shouldPrepareOauthForHostname } from "@/lib/oauth-return-origin";
+import {
+  buildOAuthRedirectToUrl,
+  shouldPrepareOauthForHostname,
+} from "@/lib/oauth-return-origin";
 
 export function LoginForm() {
   const market = useMarket();
@@ -44,12 +47,11 @@ export function LoginForm() {
         credentials: "include",
       });
     }
-    const returnOriginParam = encodeURIComponent(origin);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}&return_origin=${returnOriginParam}`,
+        redirectTo: buildOAuthRedirectToUrl(origin, next),
       },
     });
     setLoading(false);
