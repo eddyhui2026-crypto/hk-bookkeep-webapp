@@ -28,7 +28,7 @@ import {
   type CurrencyCode,
 } from "@/lib/constants";
 import { categoriesForMarketSelect } from "@/lib/categories-ui";
-import { currentTaxYearStart } from "@/lib/reports";
+import { currentTaxYearStart, defaultExportYearKey } from "@/lib/reports";
 import { useAppSnap } from "@/components/app/AppSnapContext";
 import { isLikelyReceiptImageFile } from "@/lib/receipt-file";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
@@ -518,15 +518,22 @@ export function DashboardClient({
     ? `ledgerId=${activeLedgerId}&year=${y}&month=${m}`
     : "";
 
-  const taxYearOptions = (() => {
-    const base = currentTaxYearStart();
-    return [base, base - 1, base - 2];
-  })();
+  const nowCal = new Date();
+  const calYear = nowCal.getFullYear();
+  const taxYearOptions =
+    market === "hk"
+      ? (() => {
+          const base = currentTaxYearStart(nowCal);
+          return [base, base - 1, base - 2];
+        })()
+      : [calYear, calYear - 1, calYear - 2];
 
-  const [taxExportYear, setTaxExportYear] = useState(() => currentTaxYearStart());
+  const [taxExportYear, setTaxExportYear] = useState(() =>
+    defaultExportYearKey(market)
+  );
   useEffect(() => {
-    setTaxExportYear(currentTaxYearStart());
-  }, [activeLedgerId]);
+    setTaxExportYear(defaultExportYearKey(market, new Date()));
+  }, [activeLedgerId, market]);
 
   const taxSummaryQs =
     activeLedgerId && Number.isInteger(taxExportYear)
@@ -623,7 +630,9 @@ export function DashboardClient({
           </div>
           <div className="mt-3 max-w-md space-y-2 rounded-xl border border-border/80 bg-muted/15 p-3">
             <label className="block text-xs font-medium text-muted">
-              {t("dashboard.taxYearForExport")}
+              {market === "hk"
+                ? t("dashboard.taxYearForExportHK")
+                : t("dashboard.taxYearForExportCal")}
             </label>
             <select
               value={taxExportYear}
@@ -632,9 +641,12 @@ export function DashboardClient({
             >
               {taxYearOptions.map((start) => (
                 <option key={start} value={start}>
-                  {locale === "zh"
-                    ? `${start}/${String(start + 1).slice(-2)} 年度`
-                    : `${start}/${String(start + 1).slice(-2)}`}
+                  {market === "hk"
+                    ? t("dashboard.taxYearOptionHK", {
+                        y1: start,
+                        y2: String(start + 1).slice(-2),
+                      })
+                    : t("dashboard.taxYearOptionCal", { year: start })}
                 </option>
               ))}
             </select>
@@ -711,9 +723,12 @@ export function DashboardClient({
 
       {activeLedgerId && fxChartsUnified && fxFormCurrencies.length > 0 && (
         <>
-          <p className="text-sm text-muted">{t("dashboard.fxChartsNote")}</p>
+          <p className="text-sm text-muted">
+            {t("dashboard.fxChartsNote", { anchor: chartCurrency })}
+          </p>
           <LedgerFxRatesForm
             ledgerId={activeLedgerId}
+            anchorCurrency={chartCurrency}
             currencies={fxFormCurrencies}
             mergedRates={fxMergedRates}
             canWrite={canWrite && !readOnly}

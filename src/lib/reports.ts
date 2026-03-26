@@ -1,3 +1,5 @@
+import type { Market } from "@/lib/market";
+
 export function endOfCalendarMonth(year: number, month1to12: number): Date {
   return new Date(year, month1to12, 0);
 }
@@ -28,4 +30,16 @@ export function currentTaxYearStart(from: Date = new Date()): number {
   const year = from.getFullYear();
   const month = from.getMonth() + 1;
   return month >= 4 ? year : year - 1;
+}
+
+/** 稅務／收據 ZIP／P+L 列印：香港用 Apr–Mar；SG／TW 用曆年 */
+export function taxPeriodForExport(market: Market, yearKey: number) {
+  if (market === "hk") return taxYearBounds(yearKey);
+  return yearBounds(yearKey);
+}
+
+/** 匯出年度下拉預設：香港寫「評稅年度起年」；SG／TW 用曆年 */
+export function defaultExportYearKey(market: Market, from: Date = new Date()): number {
+  if (market === "hk") return currentTaxYearStart(from);
+  return from.getFullYear();
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { TaxSummaryPrintBody } from "@/components/reports/TaxSummaryPrintBody";
 import { fetchLedgerTaxSummaryForPrint } from "@/lib/ledger-tax-summary-print";
+import { getMarket } from "@/lib/market-server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,8 @@ export default async function TaxSummaryPrintPage({
   const ledgerId = sp.ledgerId ?? "";
   const taxYear = Number(sp.taxYear);
 
-  const result = await fetchLedgerTaxSummaryForPrint(ledgerId, taxYear);
+  const market = await getMarket();
+  const result = await fetchLedgerTaxSummaryForPrint(ledgerId, taxYear, market);
 
   if (!result.ok) {
     if (result.status === 401) {

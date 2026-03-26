@@ -5,7 +5,8 @@ import {
   RECEIPT_ZIP_MAX_FILES,
 } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
-import { taxYearBounds } from "@/lib/reports";
+import { getMarketFromEnv, marketFromHost, type Market } from "@/lib/market";
+import { taxPeriodForExport } from "@/lib/reports";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -19,13 +20,16 @@ function safeZipEntryName(txDate: string, txId: string, receiptPath: string): st
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const reqUrl = new URL(request.url);
+  const { searchParams } = reqUrl;
   const ledgerId = searchParams.get("ledgerId") ?? "";
   const taxYear = Number(searchParams.get("taxYear"));
 
   if (!ledgerId || !Number.isInteger(taxYear) || taxYear < 2000 || taxYear > 2100) {
     return NextResponse.json({ error: "缺少 ledgerId 或有效 taxYear" }, { status: 400 });
   }
+
+  const market: Market = marketFromHost(reqUrl.host) ?? getMarketFromEnv();
 
   const supabase = await createClient();
   const {
@@ -35,7 +39,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "未登入" }, { status: 401 });
   }
 
-  const range = taxYearBounds(taxYear);
+  const range = taxPeriodForExport(market, taxYear);
 
   const { data: ledger, error: le } = await supabase
     .from("ledgers")

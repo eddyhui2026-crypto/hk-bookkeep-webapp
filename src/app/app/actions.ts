@@ -8,11 +8,12 @@ import {
   categorySeedRowsForNewLedger,
   LEDGER_MAX,
   CURRENCIES,
+  defaultCurrencyForMarket,
 } from "@/lib/constants";
 import type { CurrencyCode } from "@/lib/constants";
 import { sanitizeFxPatch } from "@/lib/fx-rates";
 import type { Locale } from "@/lib/i18n/messages";
-import { getMarketFromEnv } from "@/lib/market";
+import { getMarket } from "@/lib/market-server";
 
 async function requireUserAndProfile(): Promise<{
   userId: string;
@@ -80,11 +81,8 @@ export async function createLedger(
 
   if (le || !ledger) throw new Error(le?.message ?? "建立失敗");
 
-  const seed = categorySeedRowsForNewLedger(
-    template,
-    uiLocale,
-    getMarketFromEnv()
-  );
+  const market = await getMarket();
+  const seed = categorySeedRowsForNewLedger(template, uiLocale, market);
 
   const cats = seed.map((c, i) => ({
     user_id: user.id,
@@ -122,7 +120,9 @@ export async function updateLedgerFxRates(
   patch: Record<string, unknown>
 ) {
   await requireWrite();
-  const cleaned = sanitizeFxPatch(patch);
+  const market = await getMarket();
+  const anchor = defaultCurrencyForMarket(market);
+  const cleaned = sanitizeFxPatch(patch, anchor);
   if (Object.keys(cleaned).length === 0) {
     throw new Error("請輸入有效匯率（正數）");
   }
@@ -135,7 +135,7 @@ export async function updateLedgerFxRates(
 
   const { data: row, error: selErr } = await supabase
     .from("ledgers")
-    .select("fx_rates_to_hkd")
+    .select("fx_rates_to_anchor")
     .eq("id", ledgerId)
     .eq("user_id", user.id)
     .is("deleted_at", null)
@@ -145,17 +145,17 @@ export async function updateLedgerFxRates(
   if (!row) throw new Error("找不到生意簿");
 
   const prev =
-    row.fx_rates_to_hkd &&
-    typeof row.fx_rates_to_hkd === "object" &&
-    !Array.isArray(row.fx_rates_to_hkd)
-      ? { ...(row.fx_rates_to_hkd as Record<string, unknown>) }
+    row.fx_rates_to_anchor &&
+    typeof row.fx_rates_to_anchor === "object" &&
+    !Array.isArray(row.fx_rates_to_anchor)
+      ? { ...(row.fx_rates_to_anchor as Record<string, unknown>) }
       : {};
 
   const next = { ...prev, ...cleaned };
 
   const { error } = await supabase
     .from("ledgers")
-    .update({ fx_rates_to_hkd: next })
+    .update({ fx_rates_to_anchor: next })
     .eq("id", ledgerId)
     .eq("user_id", user.id)
     .is("deleted_at", null);

@@ -91,6 +91,20 @@ export const marketPatches = {
       dashboard: {
         monthly: "月付 NT$150／月",
         yearly: "年付 NT$1,500",
+        taxSummaryPrint: "年度損益摘要（列印／PDF）",
+        receiptZipDownload: "下載此曆年收據 ZIP",
+      },
+      taxSummary: {
+        title: "年度損益摘要",
+        period: "期間（曆年）",
+        disclaimer:
+          "本頁由你在 TWBookKeep 的紀錄匯總而成，僅供整理及交會計師參考，並非稅務或法律意見，也不是國稅官方申報格式。",
+        detailCsvHint:
+          "逐筆明細請用概覽「匯出本月 CSV」或「列印報表」；月份範圍與此處曆年區間未必相同。",
+      },
+      catalog: {
+        cat_sh_tx_fees: "支付手續費（Stripe／PayPal／LINE Pay 等）",
+        cat_fl_software: "軟體與工具",
       },
     },
   },
@@ -167,6 +181,16 @@ export const marketPatches = {
       dashboard: {
         monthly: "Monthly S$6.50/mo",
         yearly: "Yearly S$65",
+        taxSummaryPrint: "Annual P&L summary (print / PDF)",
+        receiptZipDownload: "Download receipts ZIP (this calendar year)",
+      },
+      taxSummary: {
+        title: "Annual P&L summary",
+        period: "Period (calendar year)",
+        disclaimer:
+          "This page summarizes your SGBookKeep records for your own filing prep—it is not tax or legal advice and is not an IRAS e-form.",
+        detailCsvHint:
+          "For transaction-level detail, use “Export CSV” or “Print report”; month boundaries may differ from this calendar-year range.",
       },
     },
     zh: {
@@ -239,6 +263,16 @@ export const marketPatches = {
       dashboard: {
         monthly: "月付 S$6.50／月",
         yearly: "年付 S$65",
+        taxSummaryPrint: "年度损益摘要（打印／PDF）",
+        receiptZipDownload: "下载此历年收据 ZIP",
+      },
+      taxSummary: {
+        title: "年度损益摘要",
+        period: "期间（历年）",
+        disclaimer:
+          "本页由你在 SGBookKeep 的记录汇总而成，仅供整理及交给税务代理参考；并非税务或法律意见，也不是 IRAS 官方表格。",
+        detailCsvHint:
+          "逐笔明细请用概览「导出本月 CSV」或「打印报表」；月份范围与此处历年区间未必相同。",
       },
     },
   },

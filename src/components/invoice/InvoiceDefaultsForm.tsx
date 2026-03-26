@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import { useMarket } from "@/components/MarketProvider";
 import { currenciesOrderedForMarket } from "@/lib/constants";
+import { invoicePaymentMethodsForMarket } from "@/lib/invoice-payment";
 import type { InvoiceDefaultsEditorValues } from "@/lib/invoice-types";
 import {
   saveInvoiceDefaults,
@@ -19,6 +20,7 @@ export function InvoiceDefaultsForm({
   const { t } = useI18n();
   const market = useMarket();
   const currencyOptions = currenciesOrderedForMarket(market);
+  const paymentMethods = invoicePaymentMethodsForMarket(market);
   const [state, formAction, pending] = useActionState<
     SaveInvoiceDefaultsState,
     FormData
@@ -68,6 +70,25 @@ export function InvoiceDefaultsForm({
 
         <div>
           <label
+            htmlFor="def-company-reg"
+            className="block text-sm font-medium text-foreground"
+          >
+            {t("invoice.fieldCompanyReg")}
+          </label>
+          <input
+            id="def-company-reg"
+            name="default_company_reg_no"
+            type="text"
+            maxLength={32}
+            autoComplete="off"
+            defaultValue={initial.company_reg_no}
+            placeholder={t("invoice.companyRegPh")}
+            className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
+          />
+        </div>
+
+        <div>
+          <label
             htmlFor="def-number"
             className="block text-sm font-medium text-foreground"
           >
@@ -98,6 +119,25 @@ export function InvoiceDefaultsForm({
             maxLength={200}
             autoComplete="off"
             defaultValue={initial.client_name}
+            className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="def-client-tax"
+            className="block text-sm font-medium text-foreground"
+          >
+            {t("invoice.fieldClientTax")}
+          </label>
+          <input
+            id="def-client-tax"
+            name="default_client_tax_id"
+            type="text"
+            maxLength={32}
+            autoComplete="off"
+            defaultValue={initial.client_tax_id}
+            placeholder={t("invoice.clientTaxPh")}
             className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
           />
         </div>
@@ -156,9 +196,11 @@ export function InvoiceDefaultsForm({
               className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/30"
             >
               <option value="">{t("invoice.defaultsUnsetSelect")}</option>
-              <option value="fps">{t("invoice.pay.fps")}</option>
-              <option value="bank_transfer">{t("invoice.pay.bank_transfer")}</option>
-              <option value="paypal">{t("invoice.pay.paypal")}</option>
+              {paymentMethods.map((key) => (
+                <option key={key} value={key}>
+                  {t(`invoice.pay.${key}`)}
+                </option>
+              ))}
             </select>
           </div>
         </div>

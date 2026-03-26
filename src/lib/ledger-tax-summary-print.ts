@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { taxYearBounds } from "@/lib/reports";
+import type { Market } from "@/lib/market";
+import { taxPeriodForExport } from "@/lib/reports";
 
 export type TaxSummaryLine = {
   category: string;
@@ -47,20 +48,27 @@ function exportTimestampHK(): string {
 
 export async function fetchLedgerTaxSummaryForPrint(
   ledgerId: string,
-  taxYearStart: number
+  exportYearKey: number,
+  market: Market
 ): Promise<TaxSummaryFetchResult> {
   if (
     !ledgerId ||
-    !Number.isInteger(taxYearStart) ||
-    taxYearStart < 2000 ||
-    taxYearStart > 2100
+    !Number.isInteger(exportYearKey) ||
+    exportYearKey < 2000 ||
+    exportYearKey > 2100
   ) {
     return { ok: false, status: 400, message: "缺少 ledgerId 或有效 taxYear" };
   }
 
-  const range = taxYearBounds(taxYearStart);
-  const taxYearLabel = `${taxYearStart}/${String(taxYearStart + 1).slice(-2)}`;
-  const periodLabel = `${taxYearLabel}（${range.start} 至 ${range.end}）`;
+  const range = taxPeriodForExport(market, exportYearKey);
+  const taxYearLabel =
+    market === "hk"
+      ? `${exportYearKey}/${String(exportYearKey + 1).slice(-2)}`
+      : String(exportYearKey);
+  const periodLabel =
+    market === "hk"
+      ? `${taxYearLabel}（${range.start} 至 ${range.end}）`
+      : `${exportYearKey}（${range.start} 至 ${range.end}）`;
 
   const supabase = await createClient();
   const {

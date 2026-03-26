@@ -1,20 +1,49 @@
 import { CURRENCIES, type CurrencyCode } from "@/lib/constants";
+import type { Market } from "@/lib/market";
+import { defaultCurrencyForMarket } from "@/lib/constants";
 
 /**
- * 內建參考：1 單位該幣 → 折合幾多 HKD（約數，非即時市價；可喺 UI 改）
- * JPY 為「每 1 日圓」折合 HKD（例如 0.051 即約 100円≈5.1 HKD）
+ * 內建參考：1 單位外幣 → 折合幾多「本籍幣」（約數，非即時市價）
  */
-export const DEFAULT_FX_TO_HKD: Record<CurrencyCode, number> = {
-  HKD: 1,
-  USD: 7.79,
-  CNY: 1.09,
-  EUR: 8.35,
-  GBP: 10.05,
-  JPY: 0.051,
-  SGD: 5.82,
-  MOP: 0.97,
-  TWD: 0.24,
-  MYR: 1.68,
+export const DEFAULT_FX_TO_ANCHOR: Partial<
+  Record<CurrencyCode, Partial<Record<CurrencyCode, number>>>
+> = {
+  HKD: {
+    HKD: 1,
+    USD: 7.79,
+    CNY: 1.09,
+    EUR: 8.35,
+    GBP: 10.05,
+    JPY: 0.051,
+    SGD: 5.82,
+    MOP: 0.97,
+    TWD: 0.24,
+    MYR: 1.68,
+  },
+  SGD: {
+    SGD: 1,
+    USD: 1.35,
+    EUR: 1.46,
+    GBP: 1.71,
+    CNY: 0.186,
+    JPY: 0.00875,
+    HKD: 0.172,
+    MYR: 0.304,
+    TWD: 0.041,
+    MOP: 0.212,
+  },
+  TWD: {
+    TWD: 1,
+    USD: 31.8,
+    HKD: 4.08,
+    JPY: 0.211,
+    EUR: 34.5,
+    GBP: 40.2,
+    CNY: 4.42,
+    SGD: 23.6,
+    MYR: 7.25,
+    MOP: 3.95,
+  },
 };
 
 function parsePositive(n: unknown): number | null {
@@ -28,49 +57,72 @@ function parsePositive(n: unknown): number | null {
   return v;
 }
 
-/** 合併 DB 覆寫與預設；只接受 CURRENCIES 內、且為正數 */
+export function anchorForMarket(market: Market): CurrencyCode {
+  return defaultCurrencyForMarket(market);
+}
+
+/** @deprecated 用 mergeFxRatesForAnchor(anchor, stored) */
 export function mergeFxRatesToHkd(stored: unknown): Record<CurrencyCode, number> {
-  const out = { ...DEFAULT_FX_TO_HKD };
+  return mergeFxRatesForAnchor("HKD", stored);
+}
+
+export function mergeFxRatesForAnchor(
+  anchor: CurrencyCode,
+  stored: unknown
+): Record<CurrencyCode, number> {
+  const baseDefaults =
+    (DEFAULT_FX_TO_ANCHOR[anchor] ??
+      DEFAULT_FX_TO_ANCHOR.HKD) as Partial<Record<CurrencyCode, number>>;
+  const out = { ...baseDefaults } as Record<CurrencyCode, number>;
   if (!stored || typeof stored !== "object" || Array.isArray(stored)) return out;
   const o = stored as Record<string, unknown>;
   for (const c of CURRENCIES) {
-    if (c === "HKD") continue;
+    if (c === anchor) continue;
     const parsed = parsePositive(o[c]);
     if (parsed !== null) out[c] = parsed;
   }
   return out;
 }
 
-export function rateToHkd(
+export function rateToAnchor(
   currency: string,
-  merged: Record<string, number>
+  merged: Record<string, number>,
+  anchor: CurrencyCode
 ): number {
-  if (currency === "HKD") return 1;
+  if (currency === anchor) return 1;
   const r = merged[currency];
   if (typeof r === "number" && Number.isFinite(r) && r > 0) return r;
-  const d = DEFAULT_FX_TO_HKD[currency as CurrencyCode];
+  const d = DEFAULT_FX_TO_ANCHOR[anchor]?.[currency as CurrencyCode];
   return typeof d === "number" && d > 0 ? d : 1;
 }
 
+export function convertChartTxsToAnchor<
+  T extends { amount: number; currency: string },
+>(txs: T[], merged: Record<string, number>, anchor: CurrencyCode): T[] {
+  return txs.map((t) => ({
+    ...t,
+    amount: Number(t.amount) * rateToAnchor(t.currency, merged, anchor),
+    currency: anchor,
+  }));
+}
+
+/** @deprecated 用 convertChartTxsToAnchor(..., anchor) */
 export function convertChartTxsToHkd<
   T extends { amount: number; currency: string },
 >(txs: T[], merged: Record<string, number>): T[] {
-  return txs.map((t) => ({
-    ...t,
-    amount: Number(t.amount) * rateToHkd(t.currency, merged),
-    currency: "HKD",
-  }));
+  return convertChartTxsToAnchor(txs, merged, "HKD");
 }
 
 const RATE_MIN = 1e-6;
 const RATE_MAX = 5000;
 
 export function sanitizeFxPatch(
-  patch: Record<string, unknown>
+  patch: Record<string, unknown>,
+  anchor: CurrencyCode = "HKD"
 ): Partial<Record<CurrencyCode, number>> {
   const out: Partial<Record<CurrencyCode, number>> = {};
   for (const c of CURRENCIES) {
-    if (c === "HKD") continue;
+    if (c === anchor) continue;
     if (!(c in patch)) continue;
     const v = parsePositive(patch[c]);
     if (v === null) continue;

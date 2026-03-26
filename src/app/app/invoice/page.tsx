@@ -5,6 +5,10 @@ import {
   defaultCurrencyForMarket,
   normalizeInvoiceCurrency,
 } from "@/lib/constants";
+import {
+  defaultPaymentMethodForMarket,
+  normalizeInvoicePaymentMethod,
+} from "@/lib/invoice-payment";
 import { getMarket } from "@/lib/market-server";
 import type { Market } from "@/lib/market";
 import type { InvoiceNewFormDefaults } from "@/lib/invoice-types";
@@ -15,9 +19,11 @@ function mapNewInvoiceDefaults(
   row: Record<string, string | null | undefined> | null,
   market: Market
 ): InvoiceNewFormDefaults {
-  const pm = row?.default_payment_method;
+  const pmRaw = row?.default_payment_method?.trim() ?? "";
   const payment_method =
-    pm === "fps" || pm === "bank_transfer" || pm === "paypal" ? pm : "fps";
+    pmRaw === ""
+      ? defaultPaymentMethodForMarket(market)
+      : normalizeInvoicePaymentMethod(pmRaw, market);
   const currency = normalizeInvoiceCurrency(
     row?.default_currency,
     defaultCurrencyForMarket(market)
@@ -25,7 +31,9 @@ function mapNewInvoiceDefaults(
 
   return {
     company_name: row?.default_company_name?.trim() ?? "",
+    company_reg_no: row?.default_company_reg_no?.trim() ?? "",
     client_name: row?.default_client_name?.trim() ?? "",
+    client_tax_id: row?.default_client_tax_id?.trim() ?? "",
     invoice_number: row?.default_invoice_number?.trim() ?? "",
     currency,
     payment_method,
@@ -48,7 +56,7 @@ export default async function InvoicePage() {
   const { data: prefs } = await supabase
     .from("user_invoice_prefs")
     .select(
-      "default_company_name, default_client_name, default_invoice_number, default_currency, default_payment_method, default_payment_details, default_description, default_notes"
+      "default_company_name, default_company_reg_no, default_client_name, default_client_tax_id, default_invoice_number, default_currency, default_payment_method, default_payment_details, default_description, default_notes"
     )
     .eq("user_id", user.id)
     .maybeSingle();

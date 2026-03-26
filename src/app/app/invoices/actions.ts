@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { CURRENCIES } from "@/lib/constants";
+import { normalizeInvoicePaymentMethod } from "@/lib/invoice-payment";
+import { getMarket } from "@/lib/market-server";
 
 const contactSchema = z.object({
   contact_email: z
@@ -29,11 +31,13 @@ const emptyToNull = (s: string) => {
 const defaultsSchema = z.object({
   default_company_name: z.string().max(200),
   default_client_name: z.string().max(200),
+  default_company_reg_no: z.string().max(32),
+  default_client_tax_id: z.string().max(32),
   default_invoice_number: z.string().max(80),
   default_currency: z
     .string()
     .refine((s) => s === "" || (CURRENCIES as readonly string[]).includes(s)),
-  default_payment_method: z.enum(["", "fps", "bank_transfer", "paypal"]),
+  default_payment_method: z.string(),
   default_payment_details: z.string().max(2000),
   default_description: z.string().max(2000),
   default_notes: z.string().max(2000),
@@ -48,6 +52,8 @@ export async function saveInvoiceDefaults(
   const parsed = defaultsSchema.safeParse({
     default_company_name: String(formData.get("default_company_name") ?? ""),
     default_client_name: String(formData.get("default_client_name") ?? ""),
+    default_company_reg_no: String(formData.get("default_company_reg_no") ?? ""),
+    default_client_tax_id: String(formData.get("default_client_tax_id") ?? ""),
     default_invoice_number: String(formData.get("default_invoice_number") ?? ""),
     default_currency: String(formData.get("default_currency") ?? ""),
     default_payment_method: String(formData.get("default_payment_method") ?? ""),
@@ -68,16 +74,22 @@ export async function saveInvoiceDefaults(
     return { error: "auth" };
   }
 
+  const market = await getMarket();
   const d = parsed.data;
+  const pmRaw = d.default_payment_method.trim();
+  const default_payment_method =
+    pmRaw === "" ? null : normalizeInvoicePaymentMethod(pmRaw, market);
+
   const { error } = await supabase.from("user_invoice_prefs").upsert(
     {
       user_id: user.id,
       default_company_name: emptyToNull(d.default_company_name),
       default_client_name: emptyToNull(d.default_client_name),
+      default_company_reg_no: emptyToNull(d.default_company_reg_no),
+      default_client_tax_id: emptyToNull(d.default_client_tax_id),
       default_invoice_number: emptyToNull(d.default_invoice_number),
       default_currency: d.default_currency === "" ? null : d.default_currency,
-      default_payment_method:
-        d.default_payment_method === "" ? null : d.default_payment_method,
+      default_payment_method,
       default_payment_details: emptyToNull(d.default_payment_details),
       default_description: emptyToNull(d.default_description),
       default_notes: emptyToNull(d.default_notes),

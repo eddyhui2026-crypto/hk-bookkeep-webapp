@@ -11,7 +11,8 @@ import {
   normalizeInvoiceCurrency,
   type CurrencyCode,
 } from "@/lib/constants";
-import { getMarketFromEnv } from "@/lib/market";
+import { normalizeInvoicePaymentMethod } from "@/lib/invoice-payment";
+import { getMarket } from "@/lib/market-server";
 
 const zInvoiceCurrency = z.enum(
   CURRENCIES as unknown as [CurrencyCode, ...CurrencyCode[]]
@@ -30,8 +31,22 @@ const schema = z.object({
       const x = s.trim();
       return x === "" ? undefined : x;
     }),
+  company_reg_no: z
+    .string()
+    .max(32)
+    .transform((s) => {
+      const x = s.trim();
+      return x === "" ? undefined : x;
+    }),
   invoice_date: z.string().max(32),
   client_name: z.string().max(200),
+  client_tax_id: z
+    .string()
+    .max(32)
+    .transform((s) => {
+      const x = s.trim();
+      return x === "" ? undefined : x;
+    }),
   description: z.string().max(2000),
   amount: z
     .string()
@@ -42,19 +57,8 @@ const schema = z.object({
       return Number.isFinite(n) ? n : NaN;
     })
     .pipe(z.number().finite().min(0)),
-  currency: z.preprocess(
-    (v) =>
-      normalizeInvoiceCurrency(
-        v,
-        defaultCurrencyForMarket(getMarketFromEnv())
-      ),
-    zInvoiceCurrency
-  ),
-  payment_method: z.preprocess((v) => {
-    const s = String(v);
-    if (s === "bank_transfer" || s === "paypal" || s === "fps") return s;
-    return "fps";
-  }, z.enum(["fps", "bank_transfer", "paypal"])),
+  currency: zInvoiceCurrency,
+  payment_method: z.string().max(32),
   payment_details: z
     .string()
     .max(2000)
@@ -67,16 +71,18 @@ const schema = z.object({
 
 export type CreateInvoiceState = { error: string; detail?: string } | null;
 
-function parseInvoiceForm(formData: FormData) {
+function parseInvoiceForm(formData: FormData, marketFallback: CurrencyCode) {
   return schema.safeParse({
     invoice_number: String(formData.get("invoice_number") ?? ""),
     company_name: String(formData.get("company_name") ?? ""),
+    company_reg_no: String(formData.get("company_reg_no") ?? ""),
     invoice_date: String(formData.get("invoice_date") ?? ""),
     client_name: String(formData.get("client_name") ?? ""),
+    client_tax_id: String(formData.get("client_tax_id") ?? ""),
     description: String(formData.get("description") ?? ""),
     amount: String(formData.get("amount") ?? ""),
-    currency: formData.get("currency"),
-    payment_method: formData.get("payment_method"),
+    currency: normalizeInvoiceCurrency(formData.get("currency"), marketFallback),
+    payment_method: String(formData.get("payment_method") ?? ""),
     payment_details: String(formData.get("payment_details") ?? ""),
     notes: String(formData.get("notes") ?? ""),
   });
@@ -86,7 +92,9 @@ export async function createInvoice(
   _prev: CreateInvoiceState,
   formData: FormData
 ): Promise<CreateInvoiceState> {
-  const parsed = parseInvoiceForm(formData);
+  const market = await getMarket();
+  const marketCurrency = defaultCurrencyForMarket(market);
+  const parsed = parseInvoiceForm(formData, marketCurrency);
 
   if (!parsed.success) {
     return { error: "validation" };
@@ -101,6 +109,7 @@ export async function createInvoice(
   }
 
   const d = parsed.data;
+  const payment_method = normalizeInvoicePaymentMethod(d.payment_method, market);
   const invTrim = d.invoice_number.trim();
   const invoice_number =
     invTrim === ""
@@ -118,12 +127,14 @@ export async function createInvoice(
       user_id: user.id,
       invoice_number,
       company_name: d.company_name ?? null,
+      company_reg_no: d.company_reg_no ?? null,
       invoice_date,
       client_name: d.client_name,
+      client_tax_id: d.client_tax_id ?? null,
       description: d.description,
       amount: d.amount,
       currency: d.currency,
-      payment_method: d.payment_method,
+      payment_method,
       payment_details: d.payment_details ?? null,
       notes: d.notes ?? null,
     })
@@ -155,7 +166,9 @@ export async function updateInvoice(
     return { error: "save", detail: "missing id" };
   }
 
-  const parsed = parseInvoiceForm(formData);
+  const market = await getMarket();
+  const marketCurrency = defaultCurrencyForMarket(market);
+  const parsed = parseInvoiceForm(formData, marketCurrency);
   if (!parsed.success) {
     return { error: "validation" };
   }
@@ -179,6 +192,7 @@ export async function updateInvoice(
   }
 
   const d = parsed.data;
+  const payment_method = normalizeInvoicePaymentMethod(d.payment_method, market);
   const invTrim = d.invoice_number.trim();
   const invoice_number =
     invTrim === "" ? cur.invoice_number : invTrim.slice(0, 80);
@@ -193,12 +207,14 @@ export async function updateInvoice(
     .update({
       invoice_number,
       company_name: d.company_name ?? null,
+      company_reg_no: d.company_reg_no ?? null,
       invoice_date,
       client_name: d.client_name,
+      client_tax_id: d.client_tax_id ?? null,
       description: d.description,
       amount: d.amount,
       currency: d.currency,
-      payment_method: d.payment_method,
+      payment_method,
       payment_details: d.payment_details ?? null,
       notes: d.notes ?? null,
     })

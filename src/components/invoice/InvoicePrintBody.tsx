@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useI18n } from "@/components/I18nProvider";
+import { useMarket } from "@/components/MarketProvider";
 import { formatCurrencyAmount } from "@/lib/constants";
 import type { InvoiceRow } from "@/lib/invoice-types";
 
@@ -15,17 +16,20 @@ export function InvoicePrintBody({
   contactPhone: string | null;
 }) {
   const { locale, t } = useI18n();
-  const numLocale = locale === "en" ? "en-HK" : "zh-HK";
+  const market = useMarket();
+  const numLocale =
+    locale === "en"
+      ? "en-HK"
+      : market === "tw"
+        ? "zh-TW"
+        : market === "sg"
+          ? "zh-SG"
+          : "zh-HK";
   const amt = Number(invoice.amount);
   const pm = invoice.payment_method;
-  const paymentLabel =
-    pm === "fps"
-      ? t("invoice.pay.fps")
-      : pm === "bank_transfer"
-        ? t("invoice.pay.bank_transfer")
-        : pm === "paypal"
-          ? t("invoice.pay.paypal")
-          : pm;
+  const payKey = `invoice.pay.${pm}`;
+  const payTranslated = t(payKey);
+  const paymentLabel = payTranslated !== payKey ? payTranslated : pm;
 
   const company = invoice.company_name?.trim();
   const hasContact = Boolean(contactEmail || contactPhone);
@@ -57,6 +61,11 @@ export function InvoicePrintBody({
             {company ? (
               <p className="text-xl font-semibold tracking-tight text-foreground print:text-lg">
                 {company}
+              </p>
+            ) : null}
+            {invoice.company_reg_no?.trim() ? (
+              <p className="mt-1 text-sm text-muted print:text-xs">
+                {t("invoice.fieldCompanyReg")}: {invoice.company_reg_no.trim()}
               </p>
             ) : null}
             <h1
@@ -99,6 +108,11 @@ export function InvoicePrintBody({
             <dd className="mt-0.5 text-base font-medium whitespace-pre-wrap">
               {invoice.client_name}
             </dd>
+            {invoice.client_tax_id?.trim() ? (
+              <dd className="mt-1 text-sm text-muted">
+                {t("invoice.fieldClientTax")}: {invoice.client_tax_id.trim()}
+              </dd>
+            ) : null}
           </div>
         ) : null}
         {invoice.description !== "" ? (

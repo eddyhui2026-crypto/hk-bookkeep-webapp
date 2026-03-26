@@ -7,11 +7,13 @@ import { useI18n } from "@/components/I18nProvider";
 
 export function LedgerFxRatesForm({
   ledgerId,
+  anchorCurrency,
   currencies,
   mergedRates,
   canWrite,
 }: {
   ledgerId: string;
+  anchorCurrency: string;
   currencies: string[];
   mergedRates: Record<string, number>;
   canWrite: boolean;
@@ -66,9 +68,11 @@ export function LedgerFxRatesForm({
   return (
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <h2 className="text-sm font-semibold text-foreground">
-        {t("dashboard.fxTitle")}
+        {t("dashboard.fxTitle", { anchor: anchorCurrency })}
       </h2>
-      <p className="mt-2 text-sm text-muted">{t("dashboard.fxHint")}</p>
+      <p className="mt-2 text-sm text-muted">
+        {t("dashboard.fxHint", { anchor: anchorCurrency })}
+      </p>
       <p className="mt-1 text-xs text-muted">{t("dashboard.fxDisclaimer")}</p>
       <form onSubmit={(e) => void submit(e)} className="mt-4 space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -78,7 +82,7 @@ export function LedgerFxRatesForm({
               className="flex flex-col gap-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
             >
               <span className="text-muted">
-                {t("dashboard.fxRowLabel", { code: c })}
+                {t("dashboard.fxRowLabel", { code: c, anchor: anchorCurrency })}
               </span>
               <div className="flex items-center gap-2">
                 <span className="shrink-0 text-foreground">1 {c} =</span>
@@ -97,7 +101,7 @@ export function LedgerFxRatesForm({
                   }
                   className="min-w-0 flex-1 rounded-lg border border-border bg-card px-2 py-1.5 text-foreground outline-none focus:ring-2 focus:ring-brand/30 disabled:opacity-50"
                 />
-                <span className="shrink-0 text-foreground">HKD</span>
+                <span className="shrink-0 text-foreground">{anchorCurrency}</span>
               </div>
             </label>
           ))}

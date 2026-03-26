@@ -7,21 +7,22 @@ import {
 } from "@/lib/constants";
 import type { Market } from "@/lib/market";
 import { getMarket } from "@/lib/market-server";
+import { normalizeInvoicePaymentMethod } from "@/lib/invoice-payment";
 import type { InvoiceNewFormDefaults, InvoiceRow } from "@/lib/invoice-types";
 
 export const dynamic = "force-dynamic";
 
 function rowToDefaults(inv: InvoiceRow, market: Market): InvoiceNewFormDefaults {
-  const pm = inv.payment_method;
-  const payment_method =
-    pm === "bank_transfer" || pm === "paypal" || pm === "fps" ? pm : "fps";
+  const payment_method = normalizeInvoicePaymentMethod(inv.payment_method, market);
   const currency = normalizeInvoiceCurrency(
     inv.currency,
     defaultCurrencyForMarket(market)
   );
   return {
     company_name: inv.company_name?.trim() ?? "",
+    company_reg_no: inv.company_reg_no?.trim() ?? "",
     client_name: inv.client_name,
+    client_tax_id: inv.client_tax_id?.trim() ?? "",
     invoice_number: inv.invoice_number,
     currency,
     payment_method,

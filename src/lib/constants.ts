@@ -242,6 +242,45 @@ const SHOP_DEFS: readonly SeedDef[] = [
   { slug: "cat_sh_other", zh: "其他", en: "Other", color: "#94a3b8" },
 ];
 
+/** 新建生意簿分類種子：sg + zh 介面用簡體預設名（與香港繁體稿對照） */
+const SG_ZH_BY_SLUG: Record<string, string> = {
+  cat_def_operating_income: "营业收入",
+  cat_def_cogs: "采购／成本",
+  cat_def_platform: "平台／渠道费",
+  cat_def_ads: "广告与推广",
+  cat_def_logistics: "物流运费",
+  cat_def_software: "软件订阅",
+  cat_def_pro: "专业服务",
+  cat_def_other: "其他",
+  cat_fl_project: "项目／服务收入",
+  cat_fl_outsource: "外包协作",
+  cat_fl_software: "软件与工具",
+  cat_fl_travel: "交通通讯",
+  cat_fl_training: "专业进修",
+  cat_fl_office: "办公耗材",
+  cat_fl_home_office: "居家办公（水电煤宽带比例）",
+  cat_fl_mpf: "强积金（MPF／自雇强制供款）",
+  cat_fl_marketing: "市场推广",
+  cat_fl_entertainment: "应酬／送礼（客户／伙伴）",
+  cat_fl_tax_provision: "税款预留（提醒／拨备）",
+  cat_fl_other: "其他",
+  cat_sh_platform: "平台佣金",
+  cat_sh_tx_fees: "支付手续费（Stripe／PayPal／PayNow 等）",
+  cat_sh_refunds: "退款／退货",
+  cat_sh_ads: "广告费",
+  cat_sh_ship: "包装运费",
+  cat_sh_product: "货物成本",
+  cat_sh_inventory: "仓存／进货",
+  cat_sh_packmat: "包装物料",
+  cat_sh_samples: "样品／损耗（推广／KOL）",
+  cat_sh_software: "软件订阅",
+  cat_sh_other: "其他",
+};
+
+const TW_ZH_PATCH: Record<string, string> = {
+  cat_sh_tx_fees: "支付手續費（Stripe／PayPal／LINE Pay 等）",
+};
+
 function seedRowsFromDefs(
   defs: readonly SeedDef[],
   locale: Locale
@@ -254,20 +293,45 @@ function seedRowsFromDefs(
   }));
 }
 
+function applyMarketZhSeedNames(
+  rows: CategorySeedRow[],
+  locale: Locale,
+  market: Market
+): CategorySeedRow[] {
+  if (locale !== "zh") return rows;
+  if (market === "tw") {
+    return rows.map((r) => ({
+      ...r,
+      name: TW_ZH_PATCH[r.slug] ?? r.name,
+    }));
+  }
+  if (market === "sg") {
+    return rows.map((r) => ({
+      ...r,
+      name: SG_ZH_BY_SLUG[r.slug] ?? r.name,
+    }));
+  }
+  return rows;
+}
+
 export function categorySeedRowsForNewLedger(
   template: "freelance" | "shop" | undefined,
   locale: Locale,
   market: Market
 ): CategorySeedRow[] {
+  let rows: CategorySeedRow[];
   if (template === "freelance") {
     const defs =
       market === "hk"
         ? FREELANCE_DEFS
         : FREELANCE_DEFS.filter((d) => d.slug !== "cat_fl_mpf");
-    return seedRowsFromDefs(defs, locale);
+    rows = seedRowsFromDefs(defs, locale);
+  } else if (template === "shop") {
+    rows = seedRowsFromDefs(SHOP_DEFS, locale);
+  } else {
+    rows = seedRowsFromDefs(DEFAULT_DEFS, locale);
   }
-  if (template === "shop") return seedRowsFromDefs(SHOP_DEFS, locale);
-  return seedRowsFromDefs(DEFAULT_DEFS, locale);
+  return applyMarketZhSeedNames(rows, locale, market);
 }
 
 export const LEDGER_MAX = 10;
